@@ -1,22 +1,23 @@
 import React from 'react';
-
+import './TextInput.css';
+import TextField from '@mui/material/TextField';
 interface IProps {
   inputLabel?: string;
   label: string;
   defaultValue: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  name: string;
 }
 
 export default function TextInput(props: IProps): JSX.Element {
   return (
     <div className="input-container">
       <label className="input-label">{props.inputLabel}</label>
-      <input
+      <TextField
         type="text"
+        label={props.label}
         defaultValue={props.defaultValue}
         onChange={props.onChange}
-        name={props.name}
+        className="input"
       />
     </div>
   );

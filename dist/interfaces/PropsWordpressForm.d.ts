@@ -1,7 +1,7 @@
 /// <reference types="react" />
-export interface IForm {
+export interface PropsWordpressForm {
     parsedData: [];
-    tabInput: object;
+    tabInput: object | any;
     setTabInput: React.Dispatch<React.SetStateAction<object>>;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     lang: string;
@@ -14,4 +14,5 @@ export interface IForm {
     url: string;
     wordpress_module_filter: string[];
     custom_fields: string;
+    draft: string;
 }
