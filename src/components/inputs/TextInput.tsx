@@ -1,23 +1,26 @@
-import React from 'react';
-import './TextInput.css';
+import React, { ChangeEvent } from 'react';
+import './Input.css';
 import TextField from '@mui/material/TextField';
-interface IProps {
-  inputLabel?: string;
+
+export interface ITextInputProps {
   label: string;
   defaultValue: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  rows?: number;
 }
-
-export default function TextInput(props: IProps): JSX.Element {
+export default function TextInput(props: ITextInputProps): JSX.Element {
   return (
     <div className="input-container">
-      <label className="input-label">{props.inputLabel}</label>
       <TextField
         type="text"
+        // input props
         label={props.label}
         defaultValue={props.defaultValue}
         onChange={props.onChange}
-        className="input"
+        // for style of input
+        rows={props.rows}
+        multiline={true}
+        disabled={props.label === 'id' ? true : false}
       />
     </div>
   );

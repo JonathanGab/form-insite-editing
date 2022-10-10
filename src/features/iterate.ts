@@ -2,12 +2,14 @@ export const iterate = async (
   varJson: [],
   varParent: string | null,
   varAncetre: string,
+  varGrandParent: string,
   responseArray: any[],
   setResponseArray: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
   for (let varKey in varJson) {
     let iterateObj = {
       ancetre: varAncetre,
+      grandParent: varGrandParent,
       parent: null as string | null,
       key: null as string | null,
       content: null,
@@ -15,13 +17,18 @@ export const iterate = async (
     // tant que la clé est un objet, on continue la boucle
     if (typeof varJson[varKey] === 'object' && varJson[varKey] !== null) {
       let varAncetreNew = varAncetre;
+      let varGrandParentNew = varGrandParent;
       if (varAncetre === 'racine') {
         varAncetreNew = varKey;
+        varGrandParentNew = varKey;
+      } else {
+        varGrandParent = varKey;
       }
       iterate(
         varJson[varKey],
         varKey,
         varAncetreNew,
+        varGrandParentNew,
         responseArray,
         setResponseArray
       );
@@ -33,6 +40,7 @@ export const iterate = async (
     ) {
       // create object with type
       iterateObj.ancetre = varAncetre;
+      iterateObj.grandParent = varGrandParent;
       iterateObj.parent = varParent;
       iterateObj.key = varKey;
       iterateObj.content = varJson[varKey];
@@ -45,13 +53,11 @@ export const iterate = async (
     ) {
       if (responseArray.length === 0) {
         // si response est vide, on le remplit
-        console.log('array vide');
         setResponseArray((prevState) => [...prevState, iterateObj]);
       } else {
         // si response n'est pas vide, on le vide et on le remplit
         setResponseArray([]);
         setTimeout(() => {
-          console.log('array vide');
           setResponseArray((prevState) => [...prevState, iterateObj]);
         }, 500);
       }

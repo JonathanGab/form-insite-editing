@@ -12,6 +12,6 @@ export const fetchData = (
     axios
       .get(url)
       .then((response) => setDrawerData(response.data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }
 };

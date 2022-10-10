@@ -1,0 +1,1 @@
+export declare const uploadImageDrupal: (uploadId: object | any, setMediaId: React.Dispatch<React.SetStateAction<string | number>>, setFormMediaValues: React.Dispatch<React.SetStateAction<object>>, mediaId: number | string) => void;

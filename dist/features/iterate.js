@@ -7,10 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-export const iterate = (varJson, varParent, varAncetre, responseArray, setResponseArray) => __awaiter(void 0, void 0, void 0, function* () {
+export const iterate = (varJson, varParent, varAncetre, varGrandParent, responseArray, setResponseArray) => __awaiter(void 0, void 0, void 0, function* () {
     for (let varKey in varJson) {
         let iterateObj = {
             ancetre: varAncetre,
+            grandParent: varGrandParent,
             parent: null,
             key: null,
             content: null,
@@ -18,10 +19,15 @@ export const iterate = (varJson, varParent, varAncetre, responseArray, setRespon
         // tant que la clé est un objet, on continue la boucle
         if (typeof varJson[varKey] === 'object' && varJson[varKey] !== null) {
             let varAncetreNew = varAncetre;
+            let varGrandParentNew = varGrandParent;
             if (varAncetre === 'racine') {
                 varAncetreNew = varKey;
+                varGrandParentNew = varKey;
             }
-            iterate(varJson[varKey], varKey, varAncetreNew, responseArray, setResponseArray);
+            else {
+                varGrandParent = varKey;
+            }
+            iterate(varJson[varKey], varKey, varAncetreNew, varGrandParentNew, responseArray, setResponseArray);
         }
         else if (
         // si la clé est un string/number/boolean, on l'ajoute à la réponse
@@ -30,6 +36,7 @@ export const iterate = (varJson, varParent, varAncetre, responseArray, setRespon
             typeof varJson[varKey] === 'boolean') {
             // create object with type
             iterateObj.ancetre = varAncetre;
+            iterateObj.grandParent = varGrandParent;
             iterateObj.parent = varParent;
             iterateObj.key = varKey;
             iterateObj.content = varJson[varKey];
@@ -40,14 +47,12 @@ export const iterate = (varJson, varParent, varAncetre, responseArray, setRespon
             iterateObj.content !== null) {
             if (responseArray.length === 0) {
                 // si response est vide, on le remplit
-                console.log('array vide');
                 setResponseArray((prevState) => [...prevState, iterateObj]);
             }
             else {
                 // si response n'est pas vide, on le vide et on le remplit
                 setResponseArray([]);
                 setTimeout(() => {
-                    console.log('array vide');
                     setResponseArray((prevState) => [...prevState, iterateObj]);
                 }, 500);
             }

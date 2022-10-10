@@ -1,91 +1,119 @@
-import React, { useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { PropsWordpressForm } from '../../interfaces/PropsWordpressForm';
-import { IWordpressMap } from '../../interfaces/IWordPressMap';
-import TextInput from '../inputs/TextInput';
-import NumberInput from '../inputs/NumberInput';
+import { IMap } from '../../interfaces/IMap';
 import { displayData } from '../../features/displayData';
 import { fetchData } from '../../features/fetchData';
 import { removeHtmlTags } from '../../features/removeHtmlTag';
+import Modal from '../modal/Modal';
+import './Form.css';
+import { uploadImageWordPress } from '../../features/uploadImageWordPress';
+import GenericInputWordPress from '../inputs/generic/GenericInputWordPress';
+import { PropsDrupalForm } from '../../interfaces/PropsDrupalForm';
 
 export const WordPressForm = (props: PropsWordpressForm): JSX.Element => {
+  const [isOpen, setIsOpen] = useState(false);
+
   useEffect(() => {
-    fetchData(props.open, props.id, props.setDrawerData, props.url);
+    fetchData(
+      props.open,
+      props.id,
+      props.setDataBeforeIterate,
+      props.wordpress_module_url_back
+    );
   }, [props.open]);
 
   useEffect(() => {
-    displayData(props.varState, props.id, props.varData, props.setData);
-  }, [props.varState]);
+    displayData(
+      props.dataBeforeIterate,
+      props.id,
+      props.dataAfterIterate,
+      props.seDataAfterIterate
+    );
+  }, [props.dataBeforeIterate]);
 
-  return props.parsedData ? (
+  const handleOpen = () => {
+    setIsOpen(!isOpen);
+    props.setFormValues({
+      ...props.formValues,
+      featured_media: props.mediaId,
+    });
+  };
+
+  useEffect(() => {
+    uploadImageWordPress(
+      props.uploadId,
+      props.setMediaId,
+      props.setFormValues,
+      props.formValues,
+      props.mediaId
+    );
+  }, [props.uploadId, props.mediaId]);
+
+  const handleInputChagne = (e: ChangeEvent<HTMLInputElement>, item: any) => {
+    props.setFormValues({
+      ...props.formValues,
+      [item.ancetre]:
+        item?.ancetre === props.custom_fields
+          ? { ...props.formValues[item.ancetre], [item?.key]: e.target.value }
+          : e.target.value,
+      status: props.draft,
+    });
+  };
+  return props.emptyArray ? (
     <div className="form-container">
       {props.lang} HI
-      <form onSubmit={props.onSubmit} className="form">
-        {props.parsedData
+      <form onSubmit={props.onPatchData} className="form">
+        {props.emptyArray
           ?.filter(
-            (element: IWordpressMap) =>
+            (element: IMap) =>
               props.wordpress_module_filter.includes(element?.ancetre) &&
               props.wordpress_module_filter.includes(element?.key)
           )
-          ?.map((item: IWordpressMap, i) => (
-            <div key={i}>
-              {typeof item?.content === 'string' ? (
-                <div className="input-margin">
-                  <TextInput
-                    defaultValue={removeHtmlTags(item?.content)}
-                    label={item.key === 'rendered' ? item?.ancetre : item?.key}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      props.setTabInput(
-                        item?.ancetre === props.custom_fields
-                          ? {
-                              ...props.tabInput,
-                              [item.ancetre]: {
-                                ...props.tabInput[item.ancetre],
-                                [item?.key]: e.target.value,
-                              },
-                              status: props.draft,
-                            }
-                          : {
-                              ...props.tabInput,
-                              [item?.ancetre]: e.target.value,
-                              status: props.draft,
-                            }
-                      );
-                    }}
-                  />
-                </div>
-              ) : typeof item?.content === 'number' ? (
-                <div className="input-margin">
-                  <NumberInput
-                    inputLabel=""
-                    defaultValue={item?.content}
-                    label={item.key === 'rendered' ? item?.ancetre : item?.key}
-                    name={item?.ancetre}
-                    onChange={(e) => {
-                      props.setTabInput(
-                        item?.ancetre === props.custom_fields
-                          ? {
-                              ...props.tabInput,
-                              [item.ancetre]: {
-                                ...props.tabInput[item.ancetre],
-                                [item?.key]: e.target.value,
-                              },
-                              status: props.draft,
-                            }
-                          : {
-                              ...props.tabInput,
-                              [item?.ancetre]: e.target.value,
-                              status: props.draft,
-                            }
-                      );
-                    }}
-                  />
-                </div>
-              ) : null}
-            </div>
+          ?.map((item: IMap, index: number) => (
+            <GenericInputWordPress
+              key={index}
+              type={item?.content}
+              itemAncetre={item?.ancetre}
+              itemGrandParent={item?.grandParent}
+              itemParent={item?.parent}
+              itemKey={item?.key}
+              rows={
+                typeof item?.content === 'string' && item?.content.length > 35
+                  ? 5
+                  : 1
+              }
+              defaultValue={removeHtmlTags(item?.content)}
+              src={item?.content}
+              label={item.key === 'rendered' ? item?.ancetre : item?.key}
+              name={item?.ancetre}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                handleInputChagne(e, item);
+              }}
+            />
           ))}
-        <div className="form-btn">
+        <div className="upload-media">
+          <button className="button-media" type="button" onClick={handleOpen}>
+            upload media
+          </button>
+        </div>
+        <div className="btn-container">
+          <button
+            className="btn-send"
+            type="button"
+            onClick={props.onClickPreview}
+          >
+            Preview
+          </button>
           <button className="btn-send">send</button>
         </div>
+        <Modal
+          open={isOpen}
+          onClick={handleOpen}
+          uploadId={props.uploadId}
+          setUploadId={props.setUploadId}
+          mediaId={props.mediaId}
+          setMediaId={props.setMediaId}
+        />
       </form>
     </div>
   ) : (

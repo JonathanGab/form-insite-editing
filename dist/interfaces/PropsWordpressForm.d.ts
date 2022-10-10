@@ -1,18 +1,23 @@
-/// <reference types="react" />
+import React, { Dispatch, SetStateAction, FormEvent } from 'react';
 export interface PropsWordpressForm {
-    parsedData: [];
-    tabInput: object | any;
-    setTabInput: React.Dispatch<React.SetStateAction<object>>;
-    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    emptyArray: [];
+    formValues: object | any;
+    setFormValues: Dispatch<SetStateAction<object | string>>;
+    onPatchData: (e: FormEvent<HTMLFormElement>) => void;
     lang: string;
-    varState: [];
+    dataBeforeIterate: [];
     id: string;
-    varData: [];
-    setData: React.Dispatch<React.SetStateAction<any[]>>;
+    dataAfterIterate: [];
+    seDataAfterIterate: Dispatch<SetStateAction<any[]>>;
     open: boolean;
-    setDrawerData: React.Dispatch<React.SetStateAction<any[]>>;
-    url: string;
+    setDataBeforeIterate: Dispatch<SetStateAction<any[]>>;
+    uploadId: object | any;
+    setUploadId: Dispatch<SetStateAction<object | any>>;
+    mediaId: number | string;
+    setMediaId: Dispatch<SetStateAction<string | number>>;
     wordpress_module_filter: string[];
+    wordpress_module_url_back: string;
     custom_fields: string;
     draft: string;
+    onClickPreview: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }

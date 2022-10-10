@@ -3,7 +3,8 @@ import './Drawer.css';
 
 interface IDrawerProps {
   open: boolean;
-  onClick: () => void;
+  setOpen: (open: boolean) => void;
+
   formOne?: JSX.Element;
   formTwo?: JSX.Element;
   // CSS PROPS
@@ -14,7 +15,7 @@ interface IDrawerProps {
 }
 export const Drawer = ({
   open,
-  onClick,
+  setOpen,
   formOne,
   formTwo,
   background,
@@ -40,7 +41,7 @@ export const Drawer = ({
           }
         >
           <div>
-            <button onClick={onClick}>x</button>
+            <button onClick={() => setOpen(!open)}>x</button>
           </div>
           <div
             className="drawer-col"

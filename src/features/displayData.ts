@@ -7,7 +7,7 @@ export const displayData = (
   setData: React.Dispatch<React.SetStateAction<any[]>>
 ): void => {
   if (varState !== null && varState !== undefined && id !== null) {
-    iterate(varState, '', 'racine', varData, setData);
+    iterate(varState, '', 'racine', 'gp', varData, setData);
   } else if (id === null) {
     setData([]);
   }
