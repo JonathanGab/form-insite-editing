@@ -1,4 +1,4 @@
-export const iterate = async (
+export const jsonParser = async (
   varJson: [],
   varParent: string | null,
   varAncetre: string,
@@ -24,7 +24,7 @@ export const iterate = async (
       } else {
         varGrandParent = varKey;
       }
-      iterate(
+      jsonParser(
         varJson[varKey],
         varKey,
         varAncetreNew,

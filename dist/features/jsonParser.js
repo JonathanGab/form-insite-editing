@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-export const iterate = (varJson, varParent, varAncetre, varGrandParent, responseArray, setResponseArray) => __awaiter(void 0, void 0, void 0, function* () {
+export const jsonParser = (varJson, varParent, varAncetre, varGrandParent, responseArray, setResponseArray) => __awaiter(void 0, void 0, void 0, function* () {
     for (let varKey in varJson) {
         let iterateObj = {
             ancetre: varAncetre,
@@ -27,7 +27,7 @@ export const iterate = (varJson, varParent, varAncetre, varGrandParent, response
             else {
                 varGrandParent = varKey;
             }
-            iterate(varJson[varKey], varKey, varAncetreNew, varGrandParentNew, responseArray, setResponseArray);
+            jsonParser(varJson[varKey], varKey, varAncetreNew, varGrandParentNew, responseArray, setResponseArray);
         }
         else if (
         // si la clé est un string/number/boolean, on l'ajoute à la réponse

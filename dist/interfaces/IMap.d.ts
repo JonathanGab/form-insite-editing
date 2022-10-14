@@ -1,7 +1,7 @@
 export interface IMap {
     key: string;
     parent: string;
-    grandParent: string;
+    chemin: string;
     ancetre: string;
     content: string;
     status: string;

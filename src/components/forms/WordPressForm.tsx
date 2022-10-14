@@ -15,53 +15,56 @@ export const WordPressForm = (props: PropsWordpressForm): JSX.Element => {
 
   useEffect(() => {
     fetchData(
-      props.open,
-      props.id,
-      props.setDataBeforeIterate,
+      props.openForm,
+      props.formId,
+      props.seDataAfterIterateFunc,
       props.wordpress_module_url_back
     );
-  }, [props.open]);
+  }, [props.openForm]);
 
   useEffect(() => {
     displayData(
-      props.dataBeforeIterate,
-      props.id,
-      props.dataAfterIterate,
-      props.seDataAfterIterate
+      props.dataBeforeIterateFunc,
+      props.formId,
+      props.dataAfterIterateFunc,
+      props.seDataAfterIterateFunc
     );
-  }, [props.dataBeforeIterate]);
+  }, [props.dataBeforeIterateFunc]);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
-    props.setFormValues({
-      ...props.formValues,
+    props.setEditFormValues({
+      ...props.editFormValues,
       featured_media: props.mediaId,
     });
   };
 
   useEffect(() => {
     uploadImageWordPress(
-      props.uploadId,
+      props.dragAndDropUploadId,
       props.setMediaId,
-      props.setFormValues,
-      props.formValues,
+      props.setEditFormValues,
+      props.editFormValues,
       props.mediaId
     );
-  }, [props.uploadId, props.mediaId]);
+  }, [props.dragAndDropUploadId, props.mediaId]);
 
   const handleInputChagne = (e: ChangeEvent<HTMLInputElement>, item: any) => {
-    props.setFormValues({
-      ...props.formValues,
+    props.setEditFormValues({
+      ...props.editFormValues,
       [item.ancetre]:
         item?.ancetre === props.custom_fields
-          ? { ...props.formValues[item.ancetre], [item?.key]: e.target.value }
+          ? {
+              ...props.editFormValues[item.ancetre],
+              [item?.key]: e.target.value,
+            }
           : e.target.value,
       status: props.draft,
     });
   };
   return props.emptyArray ? (
     <div className="form-container">
-      {props.lang} HI
+      {props.langague} HI
       <form onSubmit={props.onPatchData} className="form">
         {props.emptyArray
           ?.filter(
@@ -74,7 +77,6 @@ export const WordPressForm = (props: PropsWordpressForm): JSX.Element => {
               key={index}
               type={item?.content}
               itemAncetre={item?.ancetre}
-              itemGrandParent={item?.grandParent}
               itemParent={item?.parent}
               itemKey={item?.key}
               rows={
@@ -100,7 +102,7 @@ export const WordPressForm = (props: PropsWordpressForm): JSX.Element => {
           <button
             className="btn-send"
             type="button"
-            onClick={props.onClickPreview}
+            onClick={props.onClickIsPreview}
           >
             Preview
           </button>
@@ -109,8 +111,8 @@ export const WordPressForm = (props: PropsWordpressForm): JSX.Element => {
         <Modal
           open={isOpen}
           onClick={handleOpen}
-          uploadId={props.uploadId}
-          setUploadId={props.setUploadId}
+          uploadId={props.dragAndDropUploadId}
+          setUploadId={props.setDragAndDropUploadId}
           mediaId={props.mediaId}
           setMediaId={props.setMediaId}
         />

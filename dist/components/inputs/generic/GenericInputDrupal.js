@@ -15,31 +15,36 @@ import NumberInput from '../NumberInput';
 import SelectInput from '../SelectInput';
 import Image from '../Image';
 export default function GenericInputDrupal(_a) {
-    var { type, itemAncetre, itemGrandParent, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input, drupal_image_field } = _a, props = __rest(_a, ["type", "itemAncetre", "itemGrandParent", "itemParent", "itemKey", "drupal_string_input", "drupal_number_input", "drupal_boolean_input", "drupal_image_field"]);
+    var { type, itemAncetre, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input, drupal_image_field } = _a, props = __rest(_a, ["type", "itemAncetre", "itemParent", "itemKey", "drupal_string_input", "drupal_number_input", "drupal_boolean_input", "drupal_image_field"]);
     switch (true) {
         case typeof type === 'string' &&
+            //. if itemAncetre is strictly equal to included
             itemAncetre !== 'included' &&
-            !drupal_string_input.includes(itemGrandParent):
+            //. if drupal_string_input array doesn't includes itemKey
+            !drupal_string_input.includes(itemKey):
             {
                 return React.createElement(TextInput, Object.assign({}, props));
             }
         case typeof type === 'number' &&
-            !drupal_number_input.includes(itemGrandParent):
+            //. if drupal_number_input array from config doesn't includes itemParent
+            !drupal_number_input.includes(itemParent):
             {
                 return React.createElement(NumberInput, Object.assign({}, props));
             }
         case typeof type === 'boolean' &&
-            drupal_boolean_input.includes(itemGrandParent):
+            //. if drupal_boolean_input array includes itemKey
+            drupal_boolean_input.includes(itemKey):
             {
                 return React.createElement(SelectInput, Object.assign({}, props));
             }
-        case drupal_image_field.includes(itemAncetre) &&
-            drupal_image_field.includes(itemParent) &&
-            drupal_image_field.includes(itemKey):
+        case itemAncetre !== 'included' &&
+            //. if drupal_image_field array includes itemKey
+            drupal_image_field.includes(itemAncetre):
             {
                 return React.createElement(Image, Object.assign({}, props));
             }
         default: {
+            //. return nothing
             return React.createElement(React.Fragment, null);
         }
     }

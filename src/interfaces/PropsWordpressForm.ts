@@ -3,32 +3,32 @@ export interface PropsWordpressForm {
   // tableau vide qui va contenir les données du formulaire
   emptyArray: [];
   // objet qui va contenir les données du formulaire modifié
-  formValues: object | any;
+  editFormValues: object | any;
   // fonction qui va modifier l'objet tabInput
-  setFormValues: Dispatch<SetStateAction<object | string>>;
+  setEditFormValues: Dispatch<SetStateAction<object | string>>;
   // fonction qui va envoyer les données du formulaire
   onPatchData: (e: FormEvent<HTMLFormElement>) => void;
   //! langue du formulaire
-  lang: string;
+  langague: string;
   //! props for displayData()
   // tableau qui a accueilli les données du formulaire filter avant d'être modifié
-  dataBeforeIterate: [];
+  dataBeforeIterateFunc: [];
   // id du formulaire
-  id: string;
+  formId: string;
   // tableau qui a accueilli les données du formulaire filter après itération
-  dataAfterIterate: [];
+  dataAfterIterateFunc: [];
   // fonction qui modifie le tableau dataAfterIterate
-  seDataAfterIterate: Dispatch<SetStateAction<any[]>>;
+  seDataAfterIterateFunc: Dispatch<SetStateAction<any[]>>;
   //! props for fetchData()
   // booléen qui va permettre de savoir si le formulaire est ouvert ou non
-  open: boolean;
+  openForm: boolean;
   // fonction qui va modifier le tableau drawerData
-  setDataBeforeIterate: Dispatch<SetStateAction<any[]>>;
+  setDataBeforeIterateFunc: Dispatch<SetStateAction<any[]>>;
   //! props for uploadImage()
   // id du media à uploader en Drag and Drop
-  uploadId: object | any;
+  dragAndDropUploadId: object | any;
   // fonction qui va modifier l'id du media à uploader en Drag and Drop
-  setUploadId: Dispatch<SetStateAction<object | any>>;
+  setDragAndDropUploadId: Dispatch<SetStateAction<object | any>>;
   // id du media sur lequel on a cliqué
   mediaId: number | string;
   // fonction qui modifie l'id du media sur lequel on a cliqué
@@ -39,5 +39,7 @@ export interface PropsWordpressForm {
   custom_fields: string;
   draft: string;
   //! props for previews
-  onClickPreview: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  onClickIsPreview: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void;
 }

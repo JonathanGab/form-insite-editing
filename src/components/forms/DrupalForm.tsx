@@ -1,44 +1,46 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { PropsDrupalForm } from '../../interfaces/PropsDrupalForm';
 import { IMap } from '../../interfaces/IMap';
-import { displayData } from '../../features/displayData';
+import { DisplayDrupalData } from '../../features/displayData';
 import { fetchData } from '../../features/fetchData';
 import { removeHtmlTags } from '../../features/removeHtmlTag';
 import { uploadImageDrupal } from '../../features/uploadImageDrupal';
 import './Form.css';
-import Modal from '../modal/Modal';
-import GenericInput from '../inputs/generic/GenericInputWordPress';
+import ModalDrupal from '../modal/ModalDrupal';
 import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
+import CircularProgress from '@mui/material/CircularProgress';
+
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    fetchData(
-      props.open,
-      props.id,
-      props.setDataBeforeIterate,
-      props.drupal_module_url_back
-    );
-  }, [props.open]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    displayData(
-      props.dataBeforeIterate,
-      props.id,
-      props.dataAfterIterate,
-      props.seDataAfterIterate
+    fetchData(
+      props.openForm,
+      props.formId,
+      props.setDataBeforeIterateFunc,
+      props.drupal_module_url_back
     );
-  }, [props.dataBeforeIterate]);
+  }, [props.openForm]);
+
+  useEffect(() => {
+    DisplayDrupalData(
+      props.dataBeforeIterateFunc,
+      props.formId,
+      props.dataAfterIterateFunc,
+      props.seDataAfterIterateFunc
+    );
+  }, [props.dataBeforeIterateFunc]);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
-    props.setFormValues({
+    props.setEditFormMedia({
       field_image: {
         data: {
-          type: 'file-file',
+          type: 'file--file',
           id: props.mediaId,
           meta: {
-            alt: '',
-            title: '',
+            alt: props.alt,
+            title: props.title,
           },
         },
       },
@@ -47,24 +49,24 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
 
   useEffect(() => {
     uploadImageDrupal(
-      props.uploadId,
+      props.dragAndDropUploadId,
       props.setMediaId,
-      props.setFormValues,
+      props.setEditFormMedia,
       props.mediaId
     );
-  }, [props.uploadId, props.mediaId]);
+  }, [props.dragAndDropUploadId, props.mediaId]);
 
   const handleInputsChange = (e: ChangeEvent<HTMLInputElement>, item: any) => {
-    props.setFormValues(
+    props.setEditFormValues(
       item?.parent === 'attributes'
         ? {
-            ...props.formValues,
-            ...props.formValues[item?.ancetre],
+            ...props.editFormValues,
+            ...props.editFormValues[item?.ancetre],
             [item?.key]: e.target.value,
           }
         : {
-            ...props.formValues,
-            ...props.formValues[item?.ancetre],
+            ...props.editFormValues,
+            ...props.editFormValues[item?.ancetre],
             [item?.parent]: e.target.value,
           }
     );
@@ -83,51 +85,69 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
             key={index}
             type={item?.content}
             itemAncetre={item?.ancetre}
-            itemGrandParent={item?.grandParent}
             itemParent={item?.parent}
             itemKey={item?.key}
+            //. values of inputs
+            inputLabel={item?.key}
+            defaultValue={removeHtmlTags(item?.content)}
+            value={item?.content}
+            src={`http://localhost${item?.content}`}
+            //. style of inputs
             rows={
               typeof item?.content === 'string' && item?.content.length > 35
                 ? 5
                 : 1
             }
-            src={`http://localhost${item?.content}`}
             label={item?.key}
-            defaultValue={removeHtmlTags(item?.content)}
             name={item?.ancetre}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleInputsChange(e, item)
             }
-            value={item?.content}
+            //. for filter inside genericInputDrupal
             drupal_boolean_input={props.drupal_boolean_input}
             drupal_string_input={props.drupal_string_input}
             drupal_number_input={props.drupal_number_input}
-            drupal_image_field={props.drupal_image_input}
+            drupal_image_field={props.drupal_image_field}
+            updateImageOnClick={() => setIsOpen(!isOpen)}
           />
         ))}
-      <div className="upload-media">
-        <button className="button-media">upload media</button>
-      </div>
+
       <div className="btn-container">
         <button
           className="btn-send"
           type="button"
-          onClick={props.onClickPreview}
+          onClick={props.onClickIsPreview}
         >
           Preview
         </button>
         <button className="btn-send">send</button>
       </div>
-      <Modal
+      <ModalDrupal
         open={isOpen}
+        route_to_media={props.media_url}
+        api_url={props.api_url}
         onClick={handleOpen}
-        uploadId={props.uploadId}
-        setUploadId={props.setUploadId}
+        setUploadId={props.setDragAndDropUploadId}
         mediaId={props.mediaId}
         setMediaId={props.setMediaId}
+        chemin={props.chemin}
+        setAltText={props.setAlt}
+        setTitle={props.setTitle}
+        title={props.title}
+        altText={props.alt}
       />
     </form>
   ) : (
-    <div>Loading...</div>
+    <div
+      style={{
+        height: 100 + '%',
+        width: 100 + '%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <CircularProgress />
+    </div>
   );
 }

@@ -1,20 +1,53 @@
 DIXEA-ReactJS-INSITE-EDITING
 
-Form take many props :
+Drawer props :
 
-| props                   |          accept          |
-| ----------------------- | :----------------------: |
-| parseData               |            []            |
-| tabInput                |            {}            |
-| setTabInput             | setState object function |
-| lang                    |          string          |
-| onSubmit                |         function         |
-| varState                |            []            |
-| id                      |          string          |
-| varData                 |            []            |
-| setVarData              | setState array function  |
-| open                    |         boolean          |
-| setDrawerData           | setState array function  |
-| url                     |          string          |
-| wordpress_module_filter |         string[]         |
-| custom_fields           |          string          |
+| props             | accept        |
+| ----------------- | ------------- |
+| open              | boolean       |
+| formOne           | JSX element   |
+| formTwo           | JSX element   |
+| closeModalOnClick | function      |
+| ---- Css -----    | ------------- |
+| width             | string        |
+| background        | string        |
+| column            | boolean       |
+| paperColor        | string        |
+
+props for button :
+
+| props            | accept   |
+| ---------------- | -------- |
+| color            | string   |
+| position         | string   |
+| top (optional)   | string   |
+| right (optional) | string   |
+| onClick          | function |
+
+Drupal Form take many props :
+
+| props                    |               accept               |
+| ------------------------ | :--------------------------------: |
+| emptyArray               |                 []                 |
+| editFormValues           |                 {}                 |
+| setEditFormValues        |      setState object function      |
+| langague                 |               string               |
+| onPatchData              |              function              |
+| dataBeforeIterateFunc    |                 []                 |
+| formId                   |               string               |
+| dataAfterIterateFunc     |                 []                 |
+| seDataAfterIterateFunc   |      setState array function       |
+| openForm                 |              boolean               |
+| setDataBeforeIterateFunc |      setState array function       |
+| dragAndDropUploadId      |                 {}                 |
+| setDragAndDropUploadId   |      setState object function      |
+| mediaId                  |          string or number          |
+| setMediaId               | setState string or number function |
+| onClickIsPreview         |              function              |
+| drupal_boolean_input     |              string[]              |
+| drupal_string_input      |              string[]              |
+| drupal_number_input      |              string[]              |
+| drupal_image_field       |              string[]              |
+| drupal_module_media_url  |               string               |
+| drupal_module_api_url    |               string               |
+| setEditFormMediaId       |      setState object function      |

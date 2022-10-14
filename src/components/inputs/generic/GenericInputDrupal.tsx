@@ -7,7 +7,6 @@ import Image, { IImageProps } from '../Image';
 interface IGenericInputProps {
   type: string | number | boolean;
   itemAncetre: string;
-  itemGrandParent: string;
   itemParent: string;
   itemKey: string;
   drupal_string_input: string[];
@@ -20,7 +19,6 @@ interface IGenericInputProps {
 export default function GenericInputDrupal({
   type,
   itemAncetre,
-  itemGrandParent,
   itemParent,
   itemKey,
   drupal_string_input,
@@ -31,24 +29,29 @@ export default function GenericInputDrupal({
 }: IGenericInputProps): JSX.Element {
   switch (true) {
     case typeof type === 'string' &&
+      //. if itemAncetre is strictly equal to included
       itemAncetre !== 'included' &&
-      !drupal_string_input.includes(itemGrandParent): {
+      //. if drupal_string_input array doesn't includes itemKey
+      !drupal_string_input.includes(itemKey): {
       return <TextInput {...(props as ITextInputProps)} />;
     }
     case typeof type === 'number' &&
-      !drupal_number_input.includes(itemGrandParent): {
+      //. if drupal_number_input array from config doesn't includes itemParent
+      !drupal_number_input.includes(itemParent): {
       return <NumberInput {...(props as INumberInputProps)} />;
     }
     case typeof type === 'boolean' &&
-      drupal_boolean_input.includes(itemGrandParent): {
+      //. if drupal_boolean_input array includes itemKey
+      drupal_boolean_input.includes(itemKey): {
       return <SelectInput {...(props as ISelectProps)} />;
     }
-    case drupal_image_field.includes(itemAncetre) &&
-      drupal_image_field.includes(itemParent) &&
-      drupal_image_field.includes(itemKey): {
+    case itemAncetre !== 'included' &&
+      //. if drupal_image_field array includes itemKey
+      drupal_image_field.includes(itemAncetre): {
       return <Image {...(props as IImageProps)} />;
     }
     default: {
+      //. return nothing
       return <></>;
     }
   }

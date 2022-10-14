@@ -1,4 +1,5 @@
-import { iterate } from './iterate';
+import { jsonParser } from './jsonParser';
+import { jsonParserDrupal } from './jsonParserDrupal';
 
 export const displayData = (
   varState: [],
@@ -7,7 +8,20 @@ export const displayData = (
   setData: React.Dispatch<React.SetStateAction<any[]>>
 ): void => {
   if (varState !== null && varState !== undefined && id !== null) {
-    iterate(varState, '', 'racine', 'gp', varData, setData);
+    jsonParser(varState, '', 'racine', 'gp', varData, setData);
+  } else if (id === null) {
+    setData([]);
+  }
+};
+
+export const DisplayDrupalData = (
+  varState: [],
+  id: string,
+  varData: [],
+  setData: React.Dispatch<React.SetStateAction<any[]>>
+): void => {
+  if (varState !== null && varState !== undefined && id !== null) {
+    jsonParserDrupal(varState, '', 'racine', 'gp', varData, setData);
   } else if (id === null) {
     setData([]);
   }

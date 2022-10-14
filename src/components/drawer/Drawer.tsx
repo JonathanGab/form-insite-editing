@@ -3,10 +3,9 @@ import './Drawer.css';
 
 interface IDrawerProps {
   open: boolean;
-  setOpen: (open: boolean) => void;
-
   formOne?: JSX.Element;
   formTwo?: JSX.Element;
+  closeModalOnClick: () => void;
   // CSS PROPS
   background: string;
   width: string;
@@ -15,7 +14,7 @@ interface IDrawerProps {
 }
 export const Drawer = ({
   open,
-  setOpen,
+  closeModalOnClick,
   formOne,
   formTwo,
   background,
@@ -41,7 +40,7 @@ export const Drawer = ({
           }
         >
           <div>
-            <button onClick={() => setOpen(!open)}>x</button>
+            <button onClick={closeModalOnClick}>x</button>
           </div>
           <div
             className="drawer-col"

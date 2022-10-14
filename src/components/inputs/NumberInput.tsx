@@ -3,9 +3,10 @@ import TextField from '@mui/material/TextField';
 
 import './Input.css';
 export interface INumberInputProps {
+  //. props INumberInputProps for NumberInput.tsx
   label: string;
   defaultValue: number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   rows?: number;
 }
 export default function NumberInput(props: INumberInputProps): JSX.Element {
