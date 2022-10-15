@@ -25,12 +25,15 @@ export interface PropsDrupalForm {
     drupal_image_field: string[];
     drupal_module_media_url: string;
     drupal_module_api_url: string;
+    editFormMedia: object | any;
     setEditFormMedia: Dispatch<React.SetStateAction<{}>>;
     chemin: string;
+    setChemin: Dispatch<React.SetStateAction<string>>;
     media_url: string;
     api_url: string;
     setAlt: Dispatch<React.SetStateAction<string>>;
     setTitle: Dispatch<React.SetStateAction<string>>;
     title: string;
     alt: string;
+    chemin_url: string;
 }

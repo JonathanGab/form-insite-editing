@@ -9,6 +9,7 @@ import './Form.css';
 import ModalDrupal from '../modal/ModalDrupal';
 import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
 import CircularProgress from '@mui/material/CircularProgress';
+import { changeIndex } from '../../features/changeIndex';
 
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -34,7 +35,7 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const handleOpen = () => {
     setIsOpen(!isOpen);
     props.setEditFormMedia({
-      field_image: {
+      [props.chemin]: {
         data: {
           type: 'file--file',
           id: props.mediaId,
@@ -49,6 +50,7 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
 
   useEffect(() => {
     uploadImageDrupal(
+      props.chemin_url,
       props.dragAndDropUploadId,
       props.setMediaId,
       props.setEditFormMedia,
@@ -74,7 +76,7 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
 
   return props.emptyArray ? (
     <form onSubmit={props.onPatchData} className="form-cms">
-      {props.emptyArray
+      {changeIndex(props.emptyArray)
         ?.filter(
           (element: IMap) =>
             props.drupal_module_filter.includes(element?.ancetre) &&
@@ -99,7 +101,6 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
                 : 1
             }
             label={item?.key}
-            name={item?.ancetre}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               handleInputsChange(e, item)
             }
@@ -108,7 +109,10 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
             drupal_string_input={props.drupal_string_input}
             drupal_number_input={props.drupal_number_input}
             drupal_image_field={props.drupal_image_field}
-            updateImageOnClick={() => setIsOpen(!isOpen)}
+            updateImageOnClick={() => {
+              setIsOpen(!isOpen);
+              props.setChemin(item?.ancetre);
+            }}
           />
         ))}
 
@@ -130,11 +134,11 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
         setUploadId={props.setDragAndDropUploadId}
         mediaId={props.mediaId}
         setMediaId={props.setMediaId}
-        chemin={props.chemin}
-        setAltText={props.setAlt}
-        setTitle={props.setTitle}
         title={props.title}
+        setTitle={props.setTitle}
         altText={props.alt}
+        setAltText={props.setAlt}
+        chemin_url={props.chemin_url}
       />
     </form>
   ) : (

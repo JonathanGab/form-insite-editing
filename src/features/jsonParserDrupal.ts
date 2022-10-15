@@ -123,15 +123,13 @@ export const jsonParserDrupal = (
     //. -------------------------------------------------------- END OF LOOP  -------------------------------------------------------
   }
   // Add image url to relationships array
-  relationshipsArray.forEach((relation: any) => {
-    includedArray.forEach((include: any) => {
+  relationshipsArray.forEach((relation: any): void => {
+    includedArray.forEach((include: any): void => {
       if (relation.image_id === include.id) {
         relation.image_url = include.image_url;
       }
     });
   });
-
-  console.log('relationshipsArray', relationshipsArray);
 
   // add relationship array to at the end of response array
 

@@ -5,7 +5,7 @@ interface IModalProps {
     route_to_media: string;
     api_url: string;
     onClick: () => void;
-    chemin: string;
+    chemin_url: string;
     setUploadId: Dispatch<SetStateAction<number | string>>;
     mediaId: number | string;
     setMediaId: Dispatch<SetStateAction<number | string>>;

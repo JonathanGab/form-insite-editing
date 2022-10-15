@@ -21,10 +21,11 @@ export default function ModalDrupal(props) {
             .then((res) => { var _a; return setMedias((_a = res === null || res === void 0 ? void 0 : res.data) === null || _a === void 0 ? void 0 : _a.data); })
             .catch((err) => console.error(err));
     }, []);
+    console.log('chemin_url', props.chemin_url);
     const postImage = (e) => __awaiter(this, void 0, void 0, function* () {
         e.preventDefault();
         try {
-            const document = yield axios.post(props.api_url + 'article/' + props.chemin, files, {
+            const document = yield axios.post(props.api_url + 'article/' + props.chemin_url, files, {
                 headers: {
                     Accept: 'application/vnd.api+json',
                     'Content-Type': 'application/octet-stream',

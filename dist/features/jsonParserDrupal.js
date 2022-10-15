@@ -91,7 +91,6 @@ export const jsonParserDrupal = (varJson, varParent, varAncetre, varChemin, resp
             }
         });
     });
-    console.log('relationshipsArray', relationshipsArray);
     // add relationship array to at the end of response array
     setResponseArray((prevState) => [
         ...prevState,

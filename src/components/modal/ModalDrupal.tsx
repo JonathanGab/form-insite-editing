@@ -16,12 +16,12 @@ interface IModalProps {
   //. route to media url
   //. ex: http://localhost/drupal/jsonapi/file/file
   route_to_media: string;
-  //. ex: http://localhost/drupal/jsonapi/node/article/ + field_image
+  //. ex: http://localhost/drupal/jsonapi/node/ + 'article/' + field_image
   api_url: string;
   //. function for open modal and update file
   onClick: () => void;
   //. for update url on click image
-  chemin: string;
+  chemin_url: string;
   //. function for update the state
   setUploadId: Dispatch<SetStateAction<number | string>>;
   //. state for get id the file already upload
@@ -56,11 +56,12 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
       .catch((err) => console.error(err));
   }, []);
 
+  console.log('chemin_url', props.chemin_url);
   const postImage = async (e: MouseEvent) => {
     e.preventDefault();
     try {
       const document = await axios.post(
-        props.api_url + 'article/' + props.chemin,
+        props.api_url + 'article/' + props.chemin_url,
         files,
         {
           headers: {
@@ -76,7 +77,6 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
       console.error(err);
     }
   };
-
   return (
     <div className={props.open ? 'mod_open_container' : 'mod_close_container'}>
       <div className="modal">
