@@ -55,12 +55,12 @@ export default function Upload(props) {
     const onButtonClick = () => {
         inputRef.current.click();
     };
-    return (React.createElement("div", null,
+    return (React.createElement("div", { className: "upload-file-container" },
         React.createElement("div", { id: "form-file-upload", onDragEnter: handleDrag },
             React.createElement("input", { ref: inputRef, type: "file", id: "input-file-upload", multiple: false, onChange: handleChange }),
             React.createElement("label", { id: "label-file-upload", htmlFor: "input-file-upload", className: dragActive ? 'drag-active' : '' },
                 React.createElement("div", null,
-                    React.createElement("p", null, "Drag and drop your file here or"),
+                    React.createElement("p", null, "Drag and drop your file here or click"),
                     React.createElement("button", { className: "upload-button", onClick: onButtonClick }, "Upload a file"))),
             dragActive && (React.createElement("div", { id: "drag-file-element", onDragEnter: handleDrag, onDragLeave: handleDrag, onDragOver: handleDrag, onDrop: (e) => {
                     handleDrop(e);

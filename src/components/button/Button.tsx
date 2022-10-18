@@ -6,13 +6,17 @@ interface propsButton {
   position?: string | any;
   top?: string | number;
   right?: string | number;
+  left?: string | number;
+  bottom?: string | number;
 }
 export const Button = ({
   onClick,
   color,
   position = 'absolute',
   top = 0,
-  right = '20px',
+  right = 0,
+  left = 0,
+  bottom = 0,
 }: propsButton): JSX.Element => {
   return (
     <div
@@ -21,6 +25,8 @@ export const Button = ({
         position: position,
         top: top,
         right: right,
+        left: left,
+        bottom: bottom,
       }}
     >
       <BorderColorOutlinedIcon onClick={onClick} />

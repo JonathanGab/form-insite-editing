@@ -21,14 +21,15 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       props.setDataBeforeIterateFunc,
       props.drupal_module_url_back
     );
-  }, [props.openForm]);
+  }, [props.openForm, props.formId, props.navigation]);
 
   useEffect(() => {
     DisplayDrupalData(
       props.dataBeforeIterateFunc,
       props.formId,
       props.dataAfterIterateFunc,
-      props.seDataAfterIterateFunc
+      props.seDataAfterIterateFunc,
+      props.image_array
     );
   }, [props.dataBeforeIterateFunc]);
 
@@ -79,8 +80,9 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       {changeIndex(props.emptyArray)
         ?.filter(
           (element: IMap) =>
-            props.drupal_module_filter.includes(element?.ancetre) &&
-            props.drupal_module_filter.includes(element?.key)
+            (props.drupal_module_filter.includes(element?.ancetre) &&
+              props.drupal_module_filter.includes(element?.key)) ||
+            element?.ancetre.includes('field_')
         )
         ?.map((item: IMap, index: number) => (
           <GenericInputDrupal

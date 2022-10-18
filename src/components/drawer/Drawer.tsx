@@ -3,24 +3,26 @@ import './Drawer.css';
 
 interface IDrawerProps {
   open: boolean;
-  formOne?: JSX.Element;
-  formTwo?: JSX.Element;
+  formOne: JSX.Element;
   closeModalOnClick: () => void;
   // CSS PROPS
   background: string;
   width: string;
   column: boolean;
   paperColor: string;
+  language_array: string[];
+  setNavigation: (value: string) => void;
 }
 export const Drawer = ({
   open,
   closeModalOnClick,
   formOne,
-  formTwo,
   background,
   width = 50 + '%',
   column = true,
   paperColor = 'transparent',
+  language_array,
+  setNavigation,
 }: IDrawerProps): JSX.Element => {
   return (
     <div className={open ? 'container' : 'container-close'}>
@@ -42,6 +44,17 @@ export const Drawer = ({
           <div>
             <button onClick={closeModalOnClick}>x</button>
           </div>
+          <div className="drawer-nav-container">
+            <div className="drawer-navigation">
+              <ul>
+                {language_array.map((lang: string) => (
+                  <li onClick={() => setNavigation(lang === 'fr' ? '' : lang)}>
+                    {lang}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
           <div
             className="drawer-col"
             // CUSTOMIZABLE CSS
@@ -56,7 +69,6 @@ export const Drawer = ({
             }
           >
             {formOne}
-            {formTwo}
           </div>
         </div>
       </div>

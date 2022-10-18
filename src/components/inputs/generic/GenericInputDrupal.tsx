@@ -12,7 +12,6 @@ interface IGenericInputProps {
   drupal_string_input: string[];
   drupal_number_input: string[];
   drupal_boolean_input: string[];
-  drupal_image_field: string[];
   [x: string]: any;
 }
 
@@ -24,7 +23,6 @@ export default function GenericInputDrupal({
   drupal_string_input,
   drupal_number_input,
   drupal_boolean_input,
-  drupal_image_field,
   ...props
 }: IGenericInputProps): JSX.Element {
   switch (true) {
@@ -32,7 +30,8 @@ export default function GenericInputDrupal({
       //. if itemAncetre is strictly equal to included
       itemAncetre !== 'included' &&
       //. if drupal_string_input array doesn't includes itemKey
-      !drupal_string_input.includes(itemKey): {
+      !drupal_string_input.includes(itemKey) &&
+      itemParent !== 'meta': {
       return <TextInput {...(props as ITextInputProps)} />;
     }
     case typeof type === 'number' &&
@@ -45,9 +44,7 @@ export default function GenericInputDrupal({
       drupal_boolean_input.includes(itemKey): {
       return <SelectInput {...(props as ISelectProps)} />;
     }
-    case itemAncetre !== 'included' &&
-      //. if drupal_image_field array includes itemKey
-      drupal_image_field.includes(itemAncetre): {
+    case itemAncetre.includes('field_'): {
       return <Image {...(props as IImageProps)} />;
     }
     default: {

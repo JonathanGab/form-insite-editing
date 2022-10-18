@@ -1,1 +1,1 @@
-export declare const jsonParserDrupal: (varJson: [], varParent: string | null, varAncetre: string, varChemin: string, responseArray: any[], setResponseArray: React.Dispatch<React.SetStateAction<any[]>>) => void;
+export declare const jsonParserDrupal: (varDataJson: [], varAncetre: string, varParent: string, varChemin: string, responseArray: any[], setResponseArray: React.Dispatch<React.SetStateAction<any[]>>, varRelationshipsImageArray: string[]) => void;

@@ -71,7 +71,7 @@ export default function Upload(props: IUploadProps): JSX.Element {
   };
 
   return (
-    <div>
+    <div className="upload-file-container">
       <div id="form-file-upload" onDragEnter={handleDrag}>
         <input
           ref={inputRef}
@@ -86,7 +86,7 @@ export default function Upload(props: IUploadProps): JSX.Element {
           className={dragActive ? 'drag-active' : ''}
         >
           <div>
-            <p>Drag and drop your file here or</p>
+            <p>Drag and drop your file here or click</p>
             <button className="upload-button" onClick={onButtonClick}>
               Upload a file
             </button>

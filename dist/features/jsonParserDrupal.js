@@ -1,13 +1,33 @@
 let varImage = {};
-let relationshipsArray = [];
 let varImageIncluded = {};
 let includedArray = [];
+// pour recupérer le nom de la relation
 const splitChemin = (relation) => {
     let splitrelation = relation.split('>');
     return splitrelation[2];
 };
-export const jsonParserDrupal = (varJson, varParent, varAncetre, varChemin, responseArray, setResponseArray) => {
-    for (let varKey in varJson) {
+export const jsonParserDrupal = (
+// Donnée provenant du json
+// Data from json
+varDataJson, 
+// nom par default de l'ancetre
+// default name of the ancestor
+varAncetre, 
+// nom par défaut du parent
+// default name of the parent
+varParent, 
+// nom par défaut de l'enfant
+// default name of the child
+varChemin, 
+// tableau pour stocker les données
+// array to store data
+responseArray, 
+// fonction pour editer les données
+// function to edit data
+setResponseArray, 
+// tableau pour stocker les images
+varRelationshipsImageArray) => {
+    for (let varKey in varDataJson) {
         let iterateObj = {
             ancetre: varAncetre,
             chemin: varChemin,
@@ -15,8 +35,10 @@ export const jsonParserDrupal = (varJson, varParent, varAncetre, varChemin, resp
             key: null,
             content: null,
         };
-        // tant que la clé est un objet, on continue la boucle
-        if (typeof varJson[varKey] === 'object' && varJson[varKey] !== null) {
+        // si la clé est un objet, on relance la fonction
+        // if the key is an object, iterate again
+        if (typeof varDataJson[varKey] === 'object' &&
+            varDataJson[varKey] !== null) {
             let varAncetreNew = varAncetre;
             let varCheminNew = varChemin;
             if (varAncetre === 'racine') {
@@ -26,21 +48,50 @@ export const jsonParserDrupal = (varJson, varParent, varAncetre, varChemin, resp
             else {
                 varCheminNew = `${varChemin}>${varKey}`;
             }
-            jsonParserDrupal(varJson[varKey], varKey, varAncetreNew, varCheminNew, responseArray, setResponseArray);
+            jsonParserDrupal(varDataJson[varKey], varAncetreNew, varKey, varCheminNew, responseArray, setResponseArray, varRelationshipsImageArray);
         }
         else if (
         // si la clé est un string/number/boolean, on l'ajoute à la réponse
-        typeof varJson[varKey] === 'string' ||
-            typeof varJson[varKey] === 'number' ||
-            typeof varJson[varKey] === 'boolean') {
-            // create object with type
+        // if the key is a string/number/boolean, we add it to the response
+        typeof varDataJson[varKey] === 'string' ||
+            typeof varDataJson[varKey] === 'number' ||
+            typeof varDataJson[varKey] === 'boolean') {
+            // on assigne les valeurs au propriétés de l'objet iterateObj
+            // we assign the values to the properties of the iterateObj object
             iterateObj.ancetre = varAncetre;
             iterateObj.chemin = varChemin;
             iterateObj.parent = varParent;
             iterateObj.key = varKey;
-            iterateObj.content = varJson[varKey];
-            // on remplit le tableau response avec les données
+            iterateObj.content = varDataJson[varKey];
         }
+        if (iterateObj.ancetre === 'data' &&
+            iterateObj.chemin.includes('data>relationships>field') &&
+            iterateObj.content === 'file--file') {
+            //. -------------------------------------------------------------------------------------------------------------------------
+            varImage.field_name = splitChemin(iterateObj.chemin);
+        }
+        if (iterateObj.ancetre === 'data' &&
+            //! ATTENTION le nom du champs système d'une image dans drupal doit commencer par field
+            //! CAUTION the name of the system field of an image in drupal must begin with field
+            iterateObj.chemin.includes('data>relationships>field') &&
+            iterateObj.key === 'id') {
+            varImage.image_id = iterateObj.content;
+            varImage.image_url = '';
+            varRelationshipsImageArray.push(Object.assign({}, varImage));
+        }
+        if (iterateObj.ancetre === 'included' &&
+            iterateObj.key === 'id' &&
+            iterateObj.parent !== 'data') {
+            varImageIncluded.id = iterateObj.content;
+        }
+        if (iterateObj.ancetre === 'included' &&
+            iterateObj.parent === 'uri' &&
+            iterateObj.key === 'url') {
+            varImageIncluded.image_url = iterateObj.content;
+            includedArray.push(Object.assign({}, varImageIncluded));
+        }
+        // On remplit l'object avec les champs non null
+        // We fill the object with non null fields
         if (iterateObj.parent !== null ||
             iterateObj.key !== null ||
             iterateObj.content !== null) {
@@ -56,47 +107,27 @@ export const jsonParserDrupal = (varJson, varParent, varAncetre, varChemin, resp
                 }, 500);
             }
         }
-        if (iterateObj.ancetre === 'data' &&
-            iterateObj.chemin.includes('data>relationships>field') &&
-            iterateObj.content === 'file--file') {
-            //. -------------------------------------------------------------------------------------------------------------------------
-            varImage.field_name = splitChemin(iterateObj.chemin);
-        }
-        if (iterateObj.ancetre === 'data' &&
-            //! attention le nom du champs système d'une image dans drupal doit commencer par field
-            iterateObj.chemin.includes('data>relationships>field') &&
-            iterateObj.key === 'id') {
-            varImage.image_id = iterateObj.content;
-            varImage.image_url = '';
-            relationshipsArray.push(Object.assign({}, varImage));
-        }
-        if (iterateObj.ancetre === 'included' &&
-            iterateObj.key === 'id' &&
-            iterateObj.parent !== 'data') {
-            varImageIncluded.id = iterateObj.content;
-        }
-        if (iterateObj.ancetre === 'included' &&
-            iterateObj.parent === 'uri' &&
-            iterateObj.key === 'url') {
-            varImageIncluded.image_url = iterateObj.content;
-            includedArray.push(Object.assign({}, varImageIncluded));
-        }
         //. -------------------------------------------------------- END OF LOOP  -------------------------------------------------------
     }
+    // Ajoute l'image au tableau de relation
     // Add image url to relationships array
-    relationshipsArray.forEach((relation) => {
+    varRelationshipsImageArray.forEach((relation) => {
         includedArray.forEach((include) => {
             if (relation.image_id === include.id) {
                 relation.image_url = include.image_url;
             }
         });
     });
+    // ajoute le tableau de relation au tableau de réponse
     // add relationship array to at the end of response array
     setResponseArray((prevState) => [
         ...prevState,
         // si l'element est déjà présent on le l'ajoute pas
-        ...relationshipsArray
+        // if the element is already present, we don't add it
+        ...varRelationshipsImageArray
             .filter((item) => !prevState.some((prevItem) => prevItem.ancetre === item.field_name))
+            // on créer l'object avec le même format
+            // create new object with same structure
             .map((element) => {
             return {
                 ancetre: element.field_name,

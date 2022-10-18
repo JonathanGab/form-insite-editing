@@ -15,13 +15,14 @@ import NumberInput from '../NumberInput';
 import SelectInput from '../SelectInput';
 import Image from '../Image';
 export default function GenericInputDrupal(_a) {
-    var { type, itemAncetre, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input, drupal_image_field } = _a, props = __rest(_a, ["type", "itemAncetre", "itemParent", "itemKey", "drupal_string_input", "drupal_number_input", "drupal_boolean_input", "drupal_image_field"]);
+    var { type, itemAncetre, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input } = _a, props = __rest(_a, ["type", "itemAncetre", "itemParent", "itemKey", "drupal_string_input", "drupal_number_input", "drupal_boolean_input"]);
     switch (true) {
         case typeof type === 'string' &&
             //. if itemAncetre is strictly equal to included
             itemAncetre !== 'included' &&
             //. if drupal_string_input array doesn't includes itemKey
-            !drupal_string_input.includes(itemKey):
+            !drupal_string_input.includes(itemKey) &&
+            itemParent !== 'meta':
             {
                 return React.createElement(TextInput, Object.assign({}, props));
             }
@@ -37,12 +38,9 @@ export default function GenericInputDrupal(_a) {
             {
                 return React.createElement(SelectInput, Object.assign({}, props));
             }
-        case itemAncetre !== 'included' &&
-            //. if drupal_image_field array includes itemKey
-            drupal_image_field.includes(itemAncetre):
-            {
-                return React.createElement(Image, Object.assign({}, props));
-            }
+        case itemAncetre.includes('field_'): {
+            return React.createElement(Image, Object.assign({}, props));
+        }
         default: {
             //. return nothing
             return React.createElement(React.Fragment, null);

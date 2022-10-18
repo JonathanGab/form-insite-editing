@@ -8,8 +8,6 @@ export interface PropsDrupalForm {
   setEditFormValues: React.Dispatch<React.SetStateAction<object | string>>;
   // fonction qui va envoyer les données du formulaire
   onPatchData: (e: FormEvent<HTMLFormElement>) => void;
-  //! langue du formulaire
-  langague: string;
   //! props for displayData()
   // tableau qui a accueilli les données du formulaire filter avant d'être modifié
   dataBeforeIterateFunc: [];
@@ -59,4 +57,6 @@ export interface PropsDrupalForm {
   title: string;
   alt: string;
   chemin_url: string;
+  image_array: [];
+  navigation: string;
 }

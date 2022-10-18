@@ -4,7 +4,6 @@ export interface PropsDrupalForm {
     editFormValues: object | any;
     setEditFormValues: React.Dispatch<React.SetStateAction<object | string>>;
     onPatchData: (e: FormEvent<HTMLFormElement>) => void;
-    langague: string;
     dataBeforeIterateFunc: [];
     formId: string;
     dataAfterIterateFunc: [];
@@ -36,4 +35,6 @@ export interface PropsDrupalForm {
     title: string;
     alt: string;
     chemin_url: string;
+    image_array: [];
+    navigation: string;
 }

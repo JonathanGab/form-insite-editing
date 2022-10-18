@@ -1,18 +1,21 @@
 import { jsonParser } from './jsonParser';
 import { jsonParserDrupal } from './jsonParserDrupal';
-export const displayData = (varState, id, varData, setData) => {
-    if (varState !== null && varState !== undefined && id !== null) {
-        jsonParser(varState, '', 'racine', 'gp', varData, setData);
+export const displayData = (varStateJson, varId, varDataArray, setDataArray) => {
+    if (varStateJson !== null && varStateJson !== undefined && varId !== null) {
+        jsonParser(varStateJson, 'racine', '', 'gp', varDataArray, setDataArray);
     }
-    else if (id === null) {
-        setData([]);
+    else if (varId === null) {
+        setDataArray([]);
     }
 };
-export const DisplayDrupalData = (varState, id, varData, setData) => {
-    if (varState !== null && varState !== undefined && id !== null) {
-        jsonParserDrupal(varState, '', 'racine', 'gp', varData, setData);
+export const DisplayDrupalData = (varStateJson, varId, varDataArray, setDataArray, varImageArray) => {
+    if (varId !== null) {
+        setDataArray([]);
+        varImageArray = [];
+        jsonParserDrupal(varStateJson, 'racine', '', 'gp', varDataArray, setDataArray, varImageArray);
     }
-    else if (id === null) {
-        setData([]);
+    else {
+        setDataArray([]);
+        varImageArray = [];
     }
 };

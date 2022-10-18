@@ -2,27 +2,39 @@ import { jsonParser } from './jsonParser';
 import { jsonParserDrupal } from './jsonParserDrupal';
 
 export const displayData = (
-  varState: [],
-  id: string,
-  varData: [],
-  setData: React.Dispatch<React.SetStateAction<any[]>>
+  varStateJson: [],
+  varId: string,
+  varDataArray: [],
+  setDataArray: React.Dispatch<React.SetStateAction<any[]>>
 ): void => {
-  if (varState !== null && varState !== undefined && id !== null) {
-    jsonParser(varState, '', 'racine', 'gp', varData, setData);
-  } else if (id === null) {
-    setData([]);
+  if (varStateJson !== null && varStateJson !== undefined && varId !== null) {
+    jsonParser(varStateJson, 'racine', '', 'gp', varDataArray, setDataArray);
+  } else if (varId === null) {
+    setDataArray([]);
   }
 };
 
 export const DisplayDrupalData = (
-  varState: [],
-  id: string,
-  varData: [],
-  setData: React.Dispatch<React.SetStateAction<any[]>>
+  varStateJson: [],
+  varId: string,
+  varDataArray: [],
+  setDataArray: React.Dispatch<React.SetStateAction<any[]>>,
+  varImageArray: []
 ): void => {
-  if (varState !== null && varState !== undefined && id !== null) {
-    jsonParserDrupal(varState, '', 'racine', 'gp', varData, setData);
-  } else if (id === null) {
-    setData([]);
+  if (varId !== null) {
+    setDataArray([]);
+    varImageArray = [];
+    jsonParserDrupal(
+      varStateJson,
+      'racine',
+      '',
+      'gp',
+      varDataArray,
+      setDataArray,
+      varImageArray
+    );
+  } else {
+    setDataArray([]);
+    varImageArray = [];
   }
 };

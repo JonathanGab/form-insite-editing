@@ -13,9 +13,9 @@ export function DrupalForm(props) {
     const [isOpen, setIsOpen] = useState(false);
     useEffect(() => {
         fetchData(props.openForm, props.formId, props.setDataBeforeIterateFunc, props.drupal_module_url_back);
-    }, [props.openForm]);
+    }, [props.openForm, props.formId, props.navigation]);
     useEffect(() => {
-        DisplayDrupalData(props.dataBeforeIterateFunc, props.formId, props.dataAfterIterateFunc, props.seDataAfterIterateFunc);
+        DisplayDrupalData(props.dataBeforeIterateFunc, props.formId, props.dataAfterIterateFunc, props.seDataAfterIterateFunc, props.image_array);
     }, [props.dataBeforeIterateFunc]);
     const handleOpen = () => {
         setIsOpen(!isOpen);
@@ -39,8 +39,9 @@ export function DrupalForm(props) {
         props.setEditFormValues((item === null || item === void 0 ? void 0 : item.parent) === 'attributes'
             ? Object.assign(Object.assign(Object.assign({}, props.editFormValues), props.editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.key]: e.target.value }) : Object.assign(Object.assign(Object.assign({}, props.editFormValues), props.editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.parent]: e.target.value }));
     };
-    return props.emptyArray ? (React.createElement("form", { onSubmit: props.onPatchData, className: "form-cms" }, (_b = (_a = changeIndex(props.emptyArray)) === null || _a === void 0 ? void 0 : _a.filter((element) => props.drupal_module_filter.includes(element === null || element === void 0 ? void 0 : element.ancetre) &&
-        props.drupal_module_filter.includes(element === null || element === void 0 ? void 0 : element.key))) === null || _b === void 0 ? void 0 :
+    return props.emptyArray ? (React.createElement("form", { onSubmit: props.onPatchData, className: "form-cms" }, (_b = (_a = changeIndex(props.emptyArray)) === null || _a === void 0 ? void 0 : _a.filter((element) => (props.drupal_module_filter.includes(element === null || element === void 0 ? void 0 : element.ancetre) &&
+        props.drupal_module_filter.includes(element === null || element === void 0 ? void 0 : element.key)) ||
+        (element === null || element === void 0 ? void 0 : element.ancetre.includes('field_')))) === null || _b === void 0 ? void 0 :
         _b.map((item, index) => (React.createElement(GenericInputDrupal, { key: index, type: item === null || item === void 0 ? void 0 : item.content, itemAncetre: item === null || item === void 0 ? void 0 : item.ancetre, itemParent: item === null || item === void 0 ? void 0 : item.parent, itemKey: item === null || item === void 0 ? void 0 : item.key, 
             //. values of inputs
             inputLabel: item === null || item === void 0 ? void 0 : item.key, defaultValue: removeHtmlTags(item === null || item === void 0 ? void 0 : item.content), value: item === null || item === void 0 ? void 0 : item.content, src: `http://localhost${item === null || item === void 0 ? void 0 : item.content}`, 
