@@ -8,5 +8,5 @@ interface IGenericInputProps {
     drupal_boolean_input: string[];
     [x: string]: any;
 }
-export default function GenericInputDrupal({ type, itemAncetre, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input, ...props }: IGenericInputProps): JSX.Element;
+export default function GenericInputDrupal({ type, itemAncetre, itemParent, itemKey, itemIsImage, drupal_string_input, drupal_number_input, drupal_boolean_input, ...props }: IGenericInputProps): JSX.Element;
 export {};

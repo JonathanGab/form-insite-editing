@@ -21,7 +21,6 @@ export default function ModalDrupal(props) {
             .then((res) => { var _a; return setMedias((_a = res === null || res === void 0 ? void 0 : res.data) === null || _a === void 0 ? void 0 : _a.data); })
             .catch((err) => console.error(err));
     }, []);
-    console.log('chemin_url', props.chemin_url);
     const postImage = (e) => __awaiter(this, void 0, void 0, function* () {
         e.preventDefault();
         try {
@@ -56,10 +55,13 @@ export default function ModalDrupal(props) {
                         React.createElement("div", { className: "mod_grid" }, medias === null || medias === void 0 ? void 0 : medias.map((i) => {
                             var _a, _b;
                             return (React.createElement("div", { className: "mod_box", key: i.id },
-                                React.createElement("img", { src: 'http://localhost' + ((_b = (_a = i === null || i === void 0 ? void 0 : i.attributes) === null || _a === void 0 ? void 0 : _a.uri) === null || _b === void 0 ? void 0 : _b.url), alt: "", className: "mod_img", onClick: () => props.setMediaId(i.id) })));
+                                React.createElement("img", { src: 'http://localhost' + ((_b = (_a = i === null || i === void 0 ? void 0 : i.attributes) === null || _a === void 0 ? void 0 : _a.uri) === null || _b === void 0 ? void 0 : _b.url), alt: "", className: "mod_img", onClick: () => {
+                                        props.setMediaId(i.id);
+                                        props.setGetImage(i);
+                                    } })));
                         }))),
                     React.createElement("div", { className: "mod_btn_send" },
-                        React.createElement("button", { onClick: props.onClick, className: "btn_send" }, "Valider")),
+                        React.createElement("button", { onClick: props.onClick, type: "button", className: "btn_send" }, "Valider")),
                     React.createElement("div", { className: "divider" },
                         React.createElement("div", { className: "divider_text" }, "OU")),
                     React.createElement("div", { className: "mod_upload_container" },
@@ -69,12 +71,10 @@ export default function ModalDrupal(props) {
                                 React.createElement(Upload, { files: files, setFiles: setFiles })),
                             React.createElement("div", { className: "mod_upload_right" },
                                 React.createElement("div", { className: "mod_update_input" },
-                                    React.createElement(TextField, { id: "outlined-name", label: "alt", value: props.altText, onChange: (e) => props.setAltText(e.target.value) })),
-                                React.createElement("div", { className: "mod_update_input" },
-                                    React.createElement(TextField, { id: "outlined-name", label: "legend", onChange: (e) => props.setTitle(e.target.value), value: props.title })))),
+                                    React.createElement(TextField, { id: "outlined-name", label: "alt", value: props.altText, onChange: (e) => props.setAltText(e.target.value) })))),
                         React.createElement("div", { className: "mod_btn_send" },
                             React.createElement("button", { className: "btn_send", onClick: (e) => {
                                     postImage(e);
-                                    props.onClick();
+                                    props.onClick(e);
                                 } }, "Valider"))))))));
 }

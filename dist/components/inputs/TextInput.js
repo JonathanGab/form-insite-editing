@@ -5,7 +5,7 @@ export default function TextInput(props) {
     return (React.createElement("div", { className: "input-container" },
         React.createElement(TextField, { type: "text", 
             // input props
-            label: props.label, defaultValue: props.defaultValue, onChange: props.onChange, 
+            label: props.TextInputlabel, defaultValue: props.defaultValueTextInput, onChange: props.onChange, 
             // for style of input
-            rows: props.rows, multiline: true, disabled: props.label === 'id' ? true : false })));
+            rows: props.rows, multiline: true, disabled: props.TextInputlabel === 'id' ? true : false })));
 }

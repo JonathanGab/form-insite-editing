@@ -19,7 +19,7 @@ interface IModalProps {
   //. ex: http://localhost/drupal/jsonapi/node/ + 'article/' + field_image
   api_url: string;
   //. function for open modal and update file
-  onClick: () => void;
+  onClick: (e: any) => void;
   //. for update url on click image
   chemin_url: string;
   //. function for update the state
@@ -32,10 +32,7 @@ interface IModalProps {
   altText: string;
   //. function for update the state
   setAltText: Dispatch<SetStateAction<string>>;
-  //. state for add title text on upload
-  title: string;
-  //. function for update the state
-  setTitle: Dispatch<SetStateAction<string>>;
+  setGetImage: Dispatch<SetStateAction<object>>;
 }
 interface IMap {
   id: number | string;
@@ -56,7 +53,6 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
       .catch((err) => console.error(err));
   }, []);
 
-  console.log('chemin_url', props.chemin_url);
   const postImage = async (e: MouseEvent) => {
     e.preventDefault();
     try {
@@ -103,14 +99,21 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
                       src={'http://localhost' + i?.attributes?.uri?.url}
                       alt=""
                       className="mod_img"
-                      onClick={() => props.setMediaId(i.id)}
+                      onClick={() => {
+                        props.setMediaId(i.id);
+                        props.setGetImage(i);
+                      }}
                     />
                   </div>
                 ))}
               </div>
             </div>
             <div className="mod_btn_send">
-              <button onClick={props.onClick} className="btn_send">
+              <button
+                onClick={props.onClick}
+                type="button"
+                className="btn_send"
+              >
                 Valider
               </button>
             </div>
@@ -132,14 +135,6 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
                       onChange={(e) => props.setAltText(e.target.value)}
                     />
                   </div>
-                  <div className="mod_update_input">
-                    <TextField
-                      id="outlined-name"
-                      label="legend"
-                      onChange={(e) => props.setTitle(e.target.value)}
-                      value={props.title}
-                    />
-                  </div>
                 </div>
               </div>
               <div className="mod_btn_send">
@@ -147,7 +142,7 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
                   className="btn_send"
                   onClick={(e) => {
                     postImage(e);
-                    props.onClick();
+                    props.onClick(e);
                   }}
                 >
                   Valider

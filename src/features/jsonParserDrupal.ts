@@ -2,11 +2,14 @@ type Image = {
   image_url: string;
   field_name: string;
   image_id: string | null;
+  title: string;
+  alt: string;
 };
 
 type ImageIncluded = {
-  id: null;
-  image_url: null;
+  id: null | string;
+  image_url: null | string;
+  isImage: boolean;
 };
 
 let varImage = <Image>{};
@@ -47,7 +50,7 @@ export const jsonParserDrupal = (
       chemin: varChemin,
       parent: null as string | null,
       key: null as string | null,
-      content: null,
+      content: null as any,
     };
     // si la clé est un objet, on relance la fonction
     // if the key is an object, iterate again
@@ -94,8 +97,7 @@ export const jsonParserDrupal = (
     ) {
       //. -------------------------------------------------------------------------------------------------------------------------
       varImage.field_name = splitChemin(iterateObj.chemin);
-    }
-    if (
+    } else if (
       iterateObj.ancetre === 'data' &&
       //! ATTENTION le nom du champs système d'une image dans drupal doit commencer par field
       //! CAUTION the name of the system field of an image in drupal must begin with field
@@ -103,22 +105,28 @@ export const jsonParserDrupal = (
       iterateObj.key === 'id'
     ) {
       varImage.image_id = iterateObj.content;
-      varImage.image_url = '';
-      varRelationshipsImageArray.push({ ...(varImage as any) });
-    }
-    if (
-      iterateObj.ancetre === 'included' &&
-      iterateObj.key === 'id' &&
-      iterateObj.parent !== 'data'
-    ) {
-      varImageIncluded.id = iterateObj.content;
-    }
-    if (
+    } else if (iterateObj.key === 'alt') {
+      varImage.alt = iterateObj.content;
+    } else if (iterateObj.key === 'title' && iterateObj.parent === 'meta') {
+      varImage.title = iterateObj.content;
+      varRelationshipsImageArray.push({ ...varImage } as any);
+    } else if (
       iterateObj.ancetre === 'included' &&
       iterateObj.parent === 'uri' &&
       iterateObj.key === 'url'
     ) {
       varImageIncluded.image_url = iterateObj.content;
+    } else if (
+      iterateObj.ancetre === 'included' &&
+      iterateObj.key === 'id' &&
+      iterateObj.parent !== 'data'
+    ) {
+      varImageIncluded.id = iterateObj.content;
+    } else if (
+      iterateObj.key === 'filemime' &&
+      iterateObj.content.includes('image/')
+    ) {
+      varImageIncluded.isImage = true;
       includedArray.push({ ...(varImageIncluded as any) });
     }
     // On remplit l'object avec les champs non null
@@ -147,6 +155,7 @@ export const jsonParserDrupal = (
     includedArray.forEach((include: any): void => {
       if (relation.image_id === include.id) {
         relation.image_url = include.image_url;
+        relation.isImage = include.isImage;
       }
     });
   });
@@ -169,7 +178,10 @@ export const jsonParserDrupal = (
           ancetre: element.field_name,
           chemin: element.field_name,
           parent: element.image_id,
+          isImage: element.isImage,
           key: 'id',
+          alt: element.alt,
+          title: element.title,
           content: element.image_url,
         };
       }),

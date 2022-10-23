@@ -1,8 +1,8 @@
 import React from 'react';
 import './Input.css';
 export interface ITextInputProps {
-    label: string;
-    defaultValue: string;
+    TextInputlabel: string;
+    defaultValueTextInput: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     rows?: number;
 }

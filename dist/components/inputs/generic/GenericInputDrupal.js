@@ -13,22 +13,23 @@ import React from 'react';
 import TextInput from '../TextInput';
 import NumberInput from '../NumberInput';
 import SelectInput from '../SelectInput';
-import Image from '../Image';
+import ImageDrupal from '../ImageDrupal';
 export default function GenericInputDrupal(_a) {
-    var { type, itemAncetre, itemParent, itemKey, drupal_string_input, drupal_number_input, drupal_boolean_input } = _a, props = __rest(_a, ["type", "itemAncetre", "itemParent", "itemKey", "drupal_string_input", "drupal_number_input", "drupal_boolean_input"]);
+    var { type, itemAncetre, itemParent, itemKey, itemIsImage, drupal_string_input, drupal_number_input, drupal_boolean_input } = _a, props = __rest(_a, ["type", "itemAncetre", "itemParent", "itemKey", "itemIsImage", "drupal_string_input", "drupal_number_input", "drupal_boolean_input"]);
     switch (true) {
         case typeof type === 'string' &&
             //. if itemAncetre is strictly equal to included
             itemAncetre !== 'included' &&
             //. if drupal_string_input array doesn't includes itemKey
-            !drupal_string_input.includes(itemKey) &&
+            drupal_string_input.includes(itemKey) &&
             itemParent !== 'meta':
             {
                 return React.createElement(TextInput, Object.assign({}, props));
             }
         case typeof type === 'number' &&
             //. if drupal_number_input array from config doesn't includes itemParent
-            !drupal_number_input.includes(itemParent):
+            !drupal_number_input.includes(itemParent) &&
+            itemKey === 'meta':
             {
                 return React.createElement(NumberInput, Object.assign({}, props));
             }
@@ -38,8 +39,8 @@ export default function GenericInputDrupal(_a) {
             {
                 return React.createElement(SelectInput, Object.assign({}, props));
             }
-        case itemAncetre.includes('field_'): {
-            return React.createElement(Image, Object.assign({}, props));
+        case itemIsImage: {
+            return React.createElement(ImageDrupal, Object.assign({}, props));
         }
         default: {
             //. return nothing

@@ -70,24 +70,33 @@ varRelationshipsImageArray) => {
             //. -------------------------------------------------------------------------------------------------------------------------
             varImage.field_name = splitChemin(iterateObj.chemin);
         }
-        if (iterateObj.ancetre === 'data' &&
+        else if (iterateObj.ancetre === 'data' &&
             //! ATTENTION le nom du champs système d'une image dans drupal doit commencer par field
             //! CAUTION the name of the system field of an image in drupal must begin with field
             iterateObj.chemin.includes('data>relationships>field') &&
             iterateObj.key === 'id') {
             varImage.image_id = iterateObj.content;
-            varImage.image_url = '';
+        }
+        else if (iterateObj.key === 'alt') {
+            varImage.alt = iterateObj.content;
+        }
+        else if (iterateObj.key === 'title' && iterateObj.parent === 'meta') {
+            varImage.title = iterateObj.content;
             varRelationshipsImageArray.push(Object.assign({}, varImage));
         }
-        if (iterateObj.ancetre === 'included' &&
+        else if (iterateObj.ancetre === 'included' &&
+            iterateObj.parent === 'uri' &&
+            iterateObj.key === 'url') {
+            varImageIncluded.image_url = iterateObj.content;
+        }
+        else if (iterateObj.ancetre === 'included' &&
             iterateObj.key === 'id' &&
             iterateObj.parent !== 'data') {
             varImageIncluded.id = iterateObj.content;
         }
-        if (iterateObj.ancetre === 'included' &&
-            iterateObj.parent === 'uri' &&
-            iterateObj.key === 'url') {
-            varImageIncluded.image_url = iterateObj.content;
+        else if (iterateObj.key === 'filemime' &&
+            iterateObj.content.includes('image/')) {
+            varImageIncluded.isImage = true;
             includedArray.push(Object.assign({}, varImageIncluded));
         }
         // On remplit l'object avec les champs non null
@@ -115,6 +124,7 @@ varRelationshipsImageArray) => {
         includedArray.forEach((include) => {
             if (relation.image_id === include.id) {
                 relation.image_url = include.image_url;
+                relation.isImage = include.isImage;
             }
         });
     });
@@ -133,7 +143,10 @@ varRelationshipsImageArray) => {
                 ancetre: element.field_name,
                 chemin: element.field_name,
                 parent: element.image_id,
+                isImage: element.isImage,
                 key: 'id',
+                alt: element.alt,
+                title: element.title,
                 content: element.image_url,
             };
         }),

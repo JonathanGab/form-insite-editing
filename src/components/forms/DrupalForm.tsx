@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
 import { PropsDrupalForm } from '../../interfaces/PropsDrupalForm';
 import { IMap } from '../../interfaces/IMap';
 import { DisplayDrupalData } from '../../features/displayData';
@@ -9,11 +9,16 @@ import './Form.css';
 import ModalDrupal from '../modal/ModalDrupal';
 import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
 import CircularProgress from '@mui/material/CircularProgress';
-import { changeIndex } from '../../features/changeIndex';
 
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
+  const [getRoute, setGetRoute] = useState<null | string>(null);
+  const [storeId, setStoreId] = useState('');
+  const [getImage, setGetImage] = useState<object>({});
+  const [storageArray, setStorageArray] = useState([]);
+  //? --------------------------------------------------------------------------------
+  //? ---------------------------------- USE EFFECT ----------------------------------
+  //? --------------------------------------------------------------------------------
   useEffect(() => {
     fetchData(
       props.openForm,
@@ -33,22 +38,6 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
     );
   }, [props.dataBeforeIterateFunc]);
 
-  const handleOpen = () => {
-    setIsOpen(!isOpen);
-    props.setEditFormMedia({
-      [props.chemin]: {
-        data: {
-          type: 'file--file',
-          id: props.mediaId,
-          meta: {
-            alt: props.alt,
-            title: props.title,
-          },
-        },
-      },
-    });
-  };
-
   useEffect(() => {
     uploadImageDrupal(
       props.chemin_url,
@@ -58,6 +47,16 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       props.mediaId
     );
   }, [props.dragAndDropUploadId, props.mediaId]);
+
+  useEffect(() => {
+    if (getImage !== null && getImage !== undefined) {
+      updateArrayImage(getRoute as string, getImage);
+    }
+  }, [getImage]);
+
+  //? --------------------------------------------------------------------------------
+  //? ------------------------------ EDIT DATA FOR TEXT ------------------------------
+  //? --------------------------------------------------------------------------------
 
   const handleInputsChange = (e: ChangeEvent<HTMLInputElement>, item: any) => {
     props.setEditFormValues(
@@ -75,48 +74,124 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
     );
   };
 
+  //? --------------------------------------------------------------------------------
+  //? ------------------------------- CHANGE DATA FOR IMAGE --------------------------
+  //? --------------------------------------------------------------------------------
+
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    props.setEditFormMedia({
+      ...props.editFormMedia,
+      [props.chemin]: {
+        data: {
+          type: 'file--file',
+          id: props.mediaId || storeId,
+          meta: {
+            alt: e.target.value,
+          },
+        },
+      },
+    });
+  };
+  //? --------------------------------------------------------------------------------------------------
+  //? --------------------------------- FOR DISPLAY IMAGE AT THE END OF FORM ---------------------------
+  //? --------------------------------------------------------------------------------------------------
+  const changeIndex = (arr: []) => {
+    const sortArray = arr.sort(
+      (a: { ancetre: string }, b: { ancetre: string }) =>
+        a.ancetre > b.ancetre ? 1 : b.ancetre > a.ancetre ? -1 : 0
+    );
+    return sortArray;
+  };
+  //? --------------------------------------------------------------------------------
+  //? --------------------------------- UPDATE ARRAY IMAGE ---------------------------
+  //? --------------------------------------------------------------------------------
+
+  const updateArrayImage = (route: string, image: any) => {
+    let temporaryObj = {
+      route,
+      ...image?.attributes?.uri,
+    };
+    return setStorageArray((prevState): any => [...prevState, temporaryObj]);
+  };
+
+  //? --------------------------------------------------------------------------------
+  //? ------------------------------- DISPLAY IMAGE ON EDIT --------------------------
+  //? --------------------------------------------------------------------------------
+
+  const displayOnEdit = (
+    array: any[],
+    itemAncetre: string,
+    itemContent: string
+  ) => {
+    let result: any = array.find(
+      (obj: { route: string }) => obj.route === itemAncetre
+    );
+
+    return result?.url
+      ? `http://localhost${result?.url}`
+      : `http://localhost${itemContent}`;
+  };
+
+  console.log(isOpen);
+
   return props.emptyArray ? (
     <form onSubmit={props.onPatchData} className="form-cms">
-      {changeIndex(props.emptyArray)
-        ?.filter(
-          (element: IMap) =>
-            (props.drupal_module_filter.includes(element?.ancetre) &&
-              props.drupal_module_filter.includes(element?.key)) ||
-            element?.ancetre.includes('field_')
-        )
-        ?.map((item: IMap, index: number) => (
-          <GenericInputDrupal
-            key={index}
-            type={item?.content}
-            itemAncetre={item?.ancetre}
-            itemParent={item?.parent}
-            itemKey={item?.key}
-            //. values of inputs
-            inputLabel={item?.key}
-            defaultValue={removeHtmlTags(item?.content)}
-            value={item?.content}
-            src={`http://localhost${item?.content}`}
-            //. style of inputs
-            rows={
-              typeof item?.content === 'string' && item?.content.length > 35
-                ? 5
-                : 1
-            }
-            label={item?.key}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleInputsChange(e, item)
-            }
-            //. for filter inside genericInputDrupal
-            drupal_boolean_input={props.drupal_boolean_input}
-            drupal_string_input={props.drupal_string_input}
-            drupal_number_input={props.drupal_number_input}
-            drupal_image_field={props.drupal_image_field}
-            updateImageOnClick={() => {
-              setIsOpen(!isOpen);
-              props.setChemin(item?.ancetre);
-            }}
-          />
-        ))}
+      {changeIndex(props.emptyArray)?.map((item: IMap, index: number) => (
+        <GenericInputDrupal
+          key={index}
+          type={item?.content}
+          itemAncetre={item?.ancetre}
+          itemParent={item?.parent}
+          itemIsImage={item?.isImage}
+          itemKey={item?.key}
+          //. values of inputs
+          value={item?.content}
+          //? --------------------------------------------------------------------------------
+          //? ------------------------------ FILTER IN CONFIG FILE ---------------------------
+          //? --------------------------------------------------------------------------------
+          //. for filter inside genericInputDrupal
+          drupal_boolean_input={props.drupal_boolean_input}
+          drupal_string_input={props.drupal_string_input}
+          drupal_number_input={props.drupal_number_input}
+          //? --------------------------------------------------------------------------------
+          //? ------------------------------ ALL FOR TEXT INPUT ------------------------------
+          //? --------------------------------------------------------------------------------
+          defaultValueTextInput={removeHtmlTags(item?.content)}
+          TextInputlabel={
+            item?.parent === 'attributes' ? item?.key : item?.parent
+          }
+          inputLabel={item?.key}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            handleInputsChange(e, item)
+          }
+          //. style of inputs
+          rows={
+            typeof item?.content === 'string' && item?.content.length > 35
+              ? 5
+              : 1
+          }
+          //? --------------------------------------------------------------------------------
+          //? -------------------------------  ALL FOR IMAGE ---------------------------------
+          //? --------------------------------------------------------------------------------
+          labelImageDiv={`image ${item?.ancetre}`}
+          defaultValueAlt={item?.alt}
+          src={displayOnEdit(storageArray, item.ancetre, item?.content)}
+          //. function for edit when click on <img />
+          updateImageOnClick={() => {
+            setIsOpen(!isOpen);
+            setGetRoute(item?.ancetre);
+            props.setChemin(item?.ancetre);
+          }}
+          onClickImageInput={() => {
+            props.setChemin(item?.ancetre);
+            setStoreId(item?.parent);
+          }}
+          //. for edit input text in image component
+          onChangeImageInput={(e: ChangeEvent<HTMLInputElement>) => {
+            handleImageChange(e);
+          }}
+        />
+      ))}
 
       <div className="btn-container">
         <button
@@ -132,15 +207,17 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
         open={isOpen}
         route_to_media={props.media_url}
         api_url={props.api_url}
-        onClick={handleOpen}
+        onClick={(e: any) => {
+          setIsOpen(!isOpen);
+          handleImageChange(e);
+        }}
         setUploadId={props.setDragAndDropUploadId}
         mediaId={props.mediaId}
         setMediaId={props.setMediaId}
-        title={props.title}
-        setTitle={props.setTitle}
         altText={props.alt}
         setAltText={props.setAlt}
         chemin_url={props.chemin_url}
+        setGetImage={setGetImage}
       />
     </form>
   ) : (

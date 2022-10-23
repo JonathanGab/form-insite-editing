@@ -5,4 +5,7 @@ export interface IMap {
   ancetre: string;
   content: string;
   status: string;
+  alt: string;
+  title: string;
+  isImage: boolean;
 }

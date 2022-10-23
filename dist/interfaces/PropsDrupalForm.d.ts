@@ -21,7 +21,6 @@ export interface PropsDrupalForm {
     drupal_boolean_input: string[];
     drupal_string_input: string[];
     drupal_number_input: string[];
-    drupal_image_field: string[];
     drupal_module_media_url: string;
     drupal_module_api_url: string;
     editFormMedia: object | any;
