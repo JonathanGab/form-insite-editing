@@ -1,11 +1,19 @@
 DIXEA-ReactJS-INSITE-EDITING
 
-1. Install NPM packages with npm
-   `sh npm install <name-of-package> `
+1. Install
 
-OR
-with YARN
-`sh yarn add <name-of-package> `
+with NPM packages with npm
+
+```sh
+npm install <name-of-package>
+
+```
+
+or with YARN
+
+```sh
+yarn add <name-of-package>
+```
 
 Drawer props :
 
