@@ -20,18 +20,15 @@ interface IModalProps {
   api_url: string;
   //. function for open modal and update file
   onClick: (e: any) => void;
+  onClose: (e: any) => void;
   //. for update url on click image
   chemin_url: string;
   //. function for update the state
-  setUploadId: Dispatch<SetStateAction<number | string>>;
+  setUploadId: Dispatch<SetStateAction<string>>;
   //. state for get id the file already upload
-  mediaId: number | string;
+  mediaId: string | number;
   //. function for update the state
-  setMediaId: Dispatch<SetStateAction<number | string>>;
-  //. state for add alt text on upload
-  altText: string;
-  //. function for update the state
-  setAltText: Dispatch<SetStateAction<string>>;
+  setMediaId: Dispatch<SetStateAction<string | number>>;
   setGetImage: Dispatch<SetStateAction<object>>;
 }
 interface IMap {
@@ -78,7 +75,7 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
       <div className="modal">
         <div className="mod_padding">
           <div className="close_btn">
-            <div className="mod_close_btn" onClick={props.onClick}>
+            <div className="mod_close_btn" onClick={props.onClose}>
               x
             </div>
           </div>
@@ -126,21 +123,12 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
                 <div className="mod_upload_left">
                   <Upload files={files} setFiles={setFiles} />
                 </div>
-                <div className="mod_upload_right">
-                  <div className="mod_update_input">
-                    <TextField
-                      id="outlined-name"
-                      label="alt"
-                      value={props.altText}
-                      onChange={(e) => props.setAltText(e.target.value)}
-                    />
-                  </div>
-                </div>
               </div>
               <div className="mod_btn_send">
                 <button
                   className="btn_send"
-                  onClick={(e) => {
+                  type="button"
+                  onClick={(e: any) => {
                     postImage(e);
                     props.onClick(e);
                   }}

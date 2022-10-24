@@ -11,7 +11,6 @@ import React, { useState, useEffect, } from 'react';
 import axios from 'axios';
 import './Modal.css';
 import Upload from '../upload/Upload';
-import TextField from '@mui/material/TextField';
 export default function ModalDrupal(props) {
     const [medias, setMedias] = useState([]);
     const [files, setFiles] = useState(null);
@@ -42,7 +41,7 @@ export default function ModalDrupal(props) {
         React.createElement("div", { className: "modal" },
             React.createElement("div", { className: "mod_padding" },
                 React.createElement("div", { className: "close_btn" },
-                    React.createElement("div", { className: "mod_close_btn", onClick: props.onClick }, "x")),
+                    React.createElement("div", { className: "mod_close_btn", onClick: props.onClose }, "x")),
                 React.createElement("div", { className: "mod_header" },
                     React.createElement("div", null,
                         React.createElement("h1", null, "S\u00E9lectionnez un m\u00E9dia")),
@@ -68,12 +67,9 @@ export default function ModalDrupal(props) {
                         React.createElement("h1", null, "Uploader un m\u00E9dia"),
                         React.createElement("div", { className: "mod_upload_block" },
                             React.createElement("div", { className: "mod_upload_left" },
-                                React.createElement(Upload, { files: files, setFiles: setFiles })),
-                            React.createElement("div", { className: "mod_upload_right" },
-                                React.createElement("div", { className: "mod_update_input" },
-                                    React.createElement(TextField, { id: "outlined-name", label: "alt", value: props.altText, onChange: (e) => props.setAltText(e.target.value) })))),
+                                React.createElement(Upload, { files: files, setFiles: setFiles }))),
                         React.createElement("div", { className: "mod_btn_send" },
-                            React.createElement("button", { className: "btn_send", onClick: (e) => {
+                            React.createElement("button", { className: "btn_send", type: "button", onClick: (e) => {
                                     postImage(e);
                                     props.onClick(e);
                                 } }, "Valider"))))))));

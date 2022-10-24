@@ -1,4 +1,10 @@
-import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
+import React, {
+  useState,
+  useEffect,
+  ChangeEvent,
+  MouseEvent,
+  FormEvent,
+} from 'react';
 import { PropsDrupalForm } from '../../interfaces/PropsDrupalForm';
 import { IMap } from '../../interfaces/IMap';
 import { DisplayDrupalData } from '../../features/displayData';
@@ -9,24 +15,30 @@ import './Form.css';
 import ModalDrupal from '../modal/ModalDrupal';
 import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
 import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
 
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [getRoute, setGetRoute] = useState<null | string>(null);
   const [storeId, setStoreId] = useState('');
+  const [getRoute, setGetRoute] = useState<null | string>(null);
   const [getImage, setGetImage] = useState<object>({});
   const [storageArray, setStorageArray] = useState([]);
+  const [chemin, setChemin] = useState<string>('');
+  const [uploadId, setUploadId] = useState<string>('');
+  const [mediaId, setMediaId] = useState<string | number>('');
+  const [formValues, setFormValues] = useState<object | any>({});
+  const [editFormMedia, setEditFormMedia] = useState<object>({});
   //? --------------------------------------------------------------------------------
   //? ---------------------------------- USE EFFECT ----------------------------------
   //? --------------------------------------------------------------------------------
   useEffect(() => {
     fetchData(
-      props.openForm,
+      isOpen,
       props.formId,
       props.setDataBeforeIterateFunc,
       props.drupal_module_url_back
     );
-  }, [props.openForm, props.formId, props.navigation]);
+  }, [isOpen, props.formId, props.navigation]);
 
   useEffect(() => {
     DisplayDrupalData(
@@ -39,14 +51,9 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   }, [props.dataBeforeIterateFunc]);
 
   useEffect(() => {
-    uploadImageDrupal(
-      props.chemin_url,
-      props.dragAndDropUploadId,
-      props.setMediaId,
-      props.setEditFormMedia,
-      props.mediaId
-    );
-  }, [props.dragAndDropUploadId, props.mediaId]);
+    uploadImageDrupal(chemin, uploadId, setMediaId, setEditFormMedia, mediaId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadId, mediaId]);
 
   useEffect(() => {
     if (getImage !== null && getImage !== undefined) {
@@ -55,20 +62,56 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   }, [getImage]);
 
   //? --------------------------------------------------------------------------------
+  //? ------------------------------ SUBMIT DATA ------------------------------
+  //? --------------------------------------------------------------------------------
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      axios.patch(
+        props.navigation === ''
+          ? `${props.drupal_base_url}/jsonapi/node/article/${props.formId}`
+          : `${props.drupal_base_url}/${props.navigation}/jsonapi/node/article/${props.formId}`,
+        {
+          data: {
+            type: 'node--article',
+            id: props.formId,
+            attributes: formValues,
+            relationships: editFormMedia,
+          },
+        },
+        {
+          headers: {
+            Authorization:
+              'Basic ' + window.btoa(`${props.user}:${props.user_mdp}`),
+            Accept: 'application/vnd.api+json',
+            'Content-Type': 'application/vnd.api+json',
+          },
+        }
+      );
+    } catch (err) {
+      console.error({ message: err });
+    } finally {
+      setMediaId('');
+      setUploadId('');
+    }
+  };
+
+  //? --------------------------------------------------------------------------------
   //? ------------------------------ EDIT DATA FOR TEXT ------------------------------
   //? --------------------------------------------------------------------------------
 
   const handleInputsChange = (e: ChangeEvent<HTMLInputElement>, item: any) => {
-    props.setEditFormValues(
+    setFormValues(
       item?.parent === 'attributes'
         ? {
-            ...props.editFormValues,
-            ...props.editFormValues[item?.ancetre],
+            ...formValues,
+            ...formValues[item?.ancetre],
             [item?.key]: e.target.value,
           }
         : {
-            ...props.editFormValues,
-            ...props.editFormValues[item?.ancetre],
+            ...formValues,
+            ...formValues[item?.ancetre],
             [item?.parent]: e.target.value,
           }
     );
@@ -79,19 +122,21 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   //? --------------------------------------------------------------------------------
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    props.setEditFormMedia({
-      ...props.editFormMedia,
-      [props.chemin]: {
+    setEditFormMedia({
+      ...editFormMedia,
+      [chemin]: {
         data: {
           type: 'file--file',
-          id: props.mediaId || storeId,
+          id: mediaId || storeId,
           meta: {
-            alt: e.target.value,
+            alt: e?.target?.value,
+            title: e?.target?.value,
           },
         },
       },
     });
   };
+
   //? --------------------------------------------------------------------------------------------------
   //? --------------------------------- FOR DISPLAY IMAGE AT THE END OF FORM ---------------------------
   //? --------------------------------------------------------------------------------------------------
@@ -111,7 +156,16 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       route,
       ...image?.attributes?.uri,
     };
-    return setStorageArray((prevState): any => [...prevState, temporaryObj]);
+
+    if (storageArray.find((obj: { route: string }) => obj.route === route)) {
+      const filteredStorageArray = storageArray.map((obj: { route: string }) =>
+        obj.route === route ? temporaryObj : obj
+      );
+      return setStorageArray(filteredStorageArray as []);
+    } else {
+      //  else add object
+      return setStorageArray((prevState): any => [...prevState, temporaryObj]);
+    }
   };
 
   //? --------------------------------------------------------------------------------
@@ -132,10 +186,12 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       : `http://localhost${itemContent}`;
   };
 
-  console.log(isOpen);
+  // console.log('editFormMedia', editFormMedia);
+  // console.log('formValues', formValues);
+  console.log('mediaId', mediaId);
 
   return props.emptyArray ? (
-    <form onSubmit={props.onPatchData} className="form-cms">
+    <form onSubmit={handleSubmit} className="form-cms">
       {changeIndex(props.emptyArray)?.map((item: IMap, index: number) => (
         <GenericInputDrupal
           key={index}
@@ -144,11 +200,14 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           itemParent={item?.parent}
           itemIsImage={item?.isImage}
           itemKey={item?.key}
+          //. ---------------------------------------
           //. values of inputs
+          //. ---------------------------------------
           value={item?.content}
           //? --------------------------------------------------------------------------------
           //? ------------------------------ FILTER IN CONFIG FILE ---------------------------
           //? --------------------------------------------------------------------------------
+
           //. for filter inside genericInputDrupal
           drupal_boolean_input={props.drupal_boolean_input}
           drupal_string_input={props.drupal_string_input}
@@ -164,7 +223,9 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             handleInputsChange(e, item)
           }
-          //. style of inputs
+          //. ---------------------------------------
+          //. ----------- style of inputs -----------
+          //. ---------------------------------------
           rows={
             typeof item?.content === 'string' && item?.content.length > 35
               ? 5
@@ -176,17 +237,21 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           labelImageDiv={`image ${item?.ancetre}`}
           defaultValueAlt={item?.alt}
           src={displayOnEdit(storageArray, item.ancetre, item?.content)}
+          //. ---------------------------------------
           //. function for edit when click on <img />
+          //. ---------------------------------------
           updateImageOnClick={() => {
             setIsOpen(!isOpen);
             setGetRoute(item?.ancetre);
-            props.setChemin(item?.ancetre);
+            setChemin(item?.ancetre);
           }}
           onClickImageInput={() => {
-            props.setChemin(item?.ancetre);
+            setChemin(item?.ancetre);
             setStoreId(item?.parent);
           }}
+          //. ---------------------------------------
           //. for edit input text in image component
+          //. ---------------------------------------
           onChangeImageInput={(e: ChangeEvent<HTMLInputElement>) => {
             handleImageChange(e);
           }}
@@ -208,28 +273,22 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
         route_to_media={props.media_url}
         api_url={props.api_url}
         onClick={(e: any) => {
-          setIsOpen(!isOpen);
           handleImageChange(e);
+          setIsOpen(!isOpen);
         }}
-        setUploadId={props.setDragAndDropUploadId}
-        mediaId={props.mediaId}
-        setMediaId={props.setMediaId}
-        altText={props.alt}
-        setAltText={props.setAlt}
-        chemin_url={props.chemin_url}
+        onClose={() => {
+          setIsOpen(false);
+          setGetRoute(null);
+        }}
+        setUploadId={setUploadId}
+        mediaId={mediaId}
+        setMediaId={setMediaId}
+        chemin_url={chemin}
         setGetImage={setGetImage}
       />
     </form>
   ) : (
-    <div
-      style={{
-        height: 100 + '%',
-        width: 100 + '%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+    <div className="loader">
       <CircularProgress />
     </div>
   );

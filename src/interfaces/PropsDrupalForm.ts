@@ -58,4 +58,7 @@ export interface PropsDrupalForm {
   chemin_url: string;
   image_array: [];
   navigation: string;
+  drupal_base_url: string;
+  user: string;
+  user_mdp: string;
 }

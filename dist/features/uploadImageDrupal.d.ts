@@ -1,1 +1,1 @@
-export declare const uploadImageDrupal: (chemin_url: string, uploadId: object | any, setMediaId: React.Dispatch<React.SetStateAction<string | number>>, setFormMediaValues: React.Dispatch<React.SetStateAction<object>>, mediaId: number | string) => void;
+export declare const uploadImageDrupal: (chemin_url: string, uploadId: object | any, setMediaId: React.Dispatch<React.SetStateAction<string | number>>, setEditFormMedia: React.Dispatch<React.SetStateAction<object>>, mediaId: number | string) => void;
