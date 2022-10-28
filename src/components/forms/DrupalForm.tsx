@@ -1,32 +1,53 @@
-import React, { useState, useEffect, ChangeEvent, MouseEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import axios from 'axios';
+import './Form.css';
+import ModalDrupal from '../modal/ModalDrupal';
+import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
+import CircularProgress from '@mui/material/CircularProgress';
 import { PropsDrupalForm } from '../../interfaces/PropsDrupalForm';
 import { IMap } from '../../interfaces/IMap';
 import { DisplayDrupalData } from '../../features/displayData';
 import { fetchData } from '../../features/fetchData';
 import { removeHtmlTags } from '../../features/removeHtmlTag';
 import { uploadImageDrupal } from '../../features/uploadImageDrupal';
-import './Form.css';
-import ModalDrupal from '../modal/ModalDrupal';
-import GenericInputDrupal from '../inputs/generic/GenericInputDrupal';
-import CircularProgress from '@mui/material/CircularProgress';
+import { decryptCodes } from '../../features/encrypt';
+import { getDataFromLocalStorage } from '../../features/storage';
+type userDataType = {
+  email: null | string;
+  password: string;
+  auth_id: null | string;
+};
 
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [getRoute, setGetRoute] = useState<null | string>(null);
   const [storeId, setStoreId] = useState('');
+  const [getRoute, setGetRoute] = useState<null | string>(null);
   const [getImage, setGetImage] = useState<object>({});
   const [storageArray, setStorageArray] = useState([]);
+  const [chemin, setChemin] = useState<string>('');
+  const [dragAndDropUploadId, setDragAndDropUploadId] = useState<
+    string | number
+  >('');
+  const [mediaId, setMediaId] = useState<string>('');
+  const [editFormValues, setEditFormValues] = useState<object | any>({});
+  const [editFormMedia, setEditFormMedia] = useState<object>({});
+  const [userData, setUserData] = useState<userDataType>({
+    email: null,
+    password: '',
+    auth_id: null,
+  });
+
   //? --------------------------------------------------------------------------------
   //? ---------------------------------- USE EFFECT ----------------------------------
   //? --------------------------------------------------------------------------------
   useEffect(() => {
     fetchData(
-      props.openForm,
+      isOpen,
       props.formId,
       props.setDataBeforeIterateFunc,
       props.drupal_module_url_back
     );
-  }, [props.openForm, props.formId, props.navigation]);
+  }, [isOpen, props.formId, props.navigation]);
 
   useEffect(() => {
     DisplayDrupalData(
@@ -40,13 +61,13 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
 
   useEffect(() => {
     uploadImageDrupal(
-      props.chemin_url,
-      props.dragAndDropUploadId,
-      props.setMediaId,
-      props.setEditFormMedia,
-      props.mediaId
+      chemin,
+      dragAndDropUploadId,
+      setDragAndDropUploadId,
+      setEditFormMedia,
+      mediaId
     );
-  }, [props.dragAndDropUploadId, props.mediaId]);
+  }, [dragAndDropUploadId, mediaId]);
 
   useEffect(() => {
     if (getImage !== null && getImage !== undefined) {
@@ -54,21 +75,26 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
     }
   }, [getImage]);
 
+  useEffect(() => {
+    if (userData !== null || userData !== undefined) {
+      getDataFromLocalStorage(setUserData as any);
+    }
+  }, []);
   //? --------------------------------------------------------------------------------
   //? ------------------------------ EDIT DATA FOR TEXT ------------------------------
   //? --------------------------------------------------------------------------------
 
   const handleInputsChange = (e: ChangeEvent<HTMLInputElement>, item: any) => {
-    props.setEditFormValues(
+    setEditFormValues(
       item?.parent === 'attributes'
         ? {
-            ...props.editFormValues,
-            ...props.editFormValues[item?.ancetre],
+            ...editFormValues,
+            ...editFormValues[item?.ancetre],
             [item?.key]: e.target.value,
           }
         : {
-            ...props.editFormValues,
-            ...props.editFormValues[item?.ancetre],
+            ...editFormValues,
+            ...editFormValues[item?.ancetre],
             [item?.parent]: e.target.value,
           }
     );
@@ -79,12 +105,12 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   //? --------------------------------------------------------------------------------
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    props.setEditFormMedia({
-      ...props.editFormMedia,
-      [props.chemin]: {
+    setEditFormMedia({
+      ...editFormMedia,
+      [chemin]: {
         data: {
           type: 'file--file',
-          id: props.mediaId || storeId,
+          id: mediaId || storeId,
           meta: {
             alt: e.target.value,
           },
@@ -132,10 +158,74 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       : `http://localhost${itemContent}`;
   };
 
-  console.log(isOpen);
+  const checkLanguage = (content: string) => {
+    if (content === props.navigation) {
+      return true;
+    } else if (props.navigation === '') {
+      content = 'fr';
+      return true;
+    } else {
+      return "Veuillez verifier la configuration de la langue dans votre back office Drupal. La langue à été activée sur le site mais pas sur l'article";
+    }
+  };
+  const activeInput = (content: string) => {
+    if (content === props.navigation) {
+      return false;
+    } else if (props.navigation === '') {
+      content = 'fr';
+      return false;
+    } else {
+      return true;
+    }
+  };
+  //? --------------------------------------------------------------------------------
+  //? --------------------------------- PATCH DATA ---------------------------------
+  //? --------------------------------------------------------------------------------
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      axios.patch(
+        props.navigation === ''
+          ? `${props.drupal_base_url}/jsonapi/node/article/${props.formId}`
+          : `${props.drupal_base_url}/${props.navigation}/jsonapi/node/article/${props.formId}`,
+        {
+          data: {
+            type: 'node--article',
+            id: props.formId,
+            attributes: editFormValues,
+            relationships: editFormMedia,
+          },
+        },
+        {
+          headers: {
+            Authorization:
+              'Basic ' +
+              window.btoa(
+                `${userData.email}:${decryptCodes(userData.password, 'secret')}`
+              ),
+            Accept: 'application/vnd.api+json',
+            'Content-Type': 'application/vnd.api+json',
+          },
+        }
+      );
+    } catch (err) {
+      console.error({ message: err });
+    } finally {
+      setMediaId('');
+      setDragAndDropUploadId('');
+    }
+  };
+  // --------------------------------------------------------------------------------
+  console.log('userData', userData);
 
+  // --------------------------------------------------------------------------------
   return props.emptyArray ? (
-    <form onSubmit={props.onPatchData} className="form-cms">
+    <form onSubmit={handleSubmit} className="form-cms">
+      {/* display the validation message */}
+      <div className="error_message">
+        {props.emptyArray[5]?.key === 'langcode' &&
+          checkLanguage(props.emptyArray[5]?.content)}
+      </div>
       {changeIndex(props.emptyArray)?.map((item: IMap, index: number) => (
         <GenericInputDrupal
           key={index}
@@ -146,6 +236,8 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           itemKey={item?.key}
           //. values of inputs
           value={item?.content}
+          disabled={activeInput(props.emptyArray[5]?.content)}
+          error={item?.content}
           //? --------------------------------------------------------------------------------
           //? ------------------------------ FILTER IN CONFIG FILE ---------------------------
           //? --------------------------------------------------------------------------------
@@ -180,16 +272,19 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           updateImageOnClick={() => {
             setIsOpen(!isOpen);
             setGetRoute(item?.ancetre);
-            props.setChemin(item?.ancetre);
+            setChemin(item?.ancetre);
           }}
           onClickImageInput={() => {
-            props.setChemin(item?.ancetre);
+            setChemin(item?.ancetre);
             setStoreId(item?.parent);
           }}
           //. for edit input text in image component
           onChangeImageInput={(e: ChangeEvent<HTMLInputElement>) => {
             handleImageChange(e);
           }}
+          //? --------------------------------------------------------------------------------
+          //? ------------------------------- LOGIN FORM ------------------------------
+          //? --------------------------------------------------------------------------------
         />
       ))}
 
@@ -211,12 +306,14 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
           setIsOpen(!isOpen);
           handleImageChange(e);
         }}
-        setUploadId={props.setDragAndDropUploadId}
-        mediaId={props.mediaId}
-        setMediaId={props.setMediaId}
-        altText={props.alt}
-        setAltText={props.setAlt}
-        chemin_url={props.chemin_url}
+        onClickModal={() => {
+          setIsOpen(false);
+          setGetRoute(null);
+        }}
+        setUploadId={setDragAndDropUploadId}
+        mediaId={mediaId}
+        setMediaId={setMediaId}
+        chemin_url={chemin}
         setGetImage={setGetImage}
       />
     </form>

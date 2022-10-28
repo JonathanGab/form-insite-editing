@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import { SelectChangeEvent } from '@mui/material/Select';
 import './SelectInput.css';
 export interface ISelectProps {

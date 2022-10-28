@@ -7,6 +7,8 @@ export interface ITextInputProps {
   defaultValueTextInput: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   rows?: number;
+  disabled?: boolean;
+  error?: boolean;
 }
 export default function TextInput(props: ITextInputProps): JSX.Element {
   return (
@@ -20,7 +22,8 @@ export default function TextInput(props: ITextInputProps): JSX.Element {
         // for style of input
         rows={props.rows}
         multiline={true}
-        disabled={props.TextInputlabel === 'id' ? true : false}
+        disabled={props.disabled}
+        error={props.error === null ? true : false}
       />
     </div>
   );

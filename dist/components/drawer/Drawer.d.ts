@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import './Drawer.css';
 interface IDrawerProps {
     open: boolean;

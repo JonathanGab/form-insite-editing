@@ -11,7 +11,6 @@ import React, { useState, useEffect, } from 'react';
 import axios from 'axios';
 import './Modal.css';
 import Upload from '../upload/Upload';
-import TextField from '@mui/material/TextField';
 export default function ModalDrupal(props) {
     const [medias, setMedias] = useState([]);
     const [files, setFiles] = useState(null);
@@ -29,7 +28,7 @@ export default function ModalDrupal(props) {
                     Accept: 'application/vnd.api+json',
                     'Content-Type': 'application/octet-stream',
                     'Content-Disposition': 'file; filename="test.png"',
-                    Authorization: 'Basic ' + window.btoa(`apiuser:Vavaskale69!`),
+                    Authorization: 'Basic ' + window.btoa(`dx_admin:Vavaskale69!`),
                 },
             });
             props.setUploadId(document.data.data);
@@ -42,7 +41,7 @@ export default function ModalDrupal(props) {
         React.createElement("div", { className: "modal" },
             React.createElement("div", { className: "mod_padding" },
                 React.createElement("div", { className: "close_btn" },
-                    React.createElement("div", { className: "mod_close_btn", onClick: props.onClick }, "x")),
+                    React.createElement("div", { className: "mod_close_btn", onClick: props.onClickModal }, "x")),
                 React.createElement("div", { className: "mod_header" },
                     React.createElement("div", null,
                         React.createElement("h1", null, "S\u00E9lectionnez un m\u00E9dia")),
@@ -68,10 +67,7 @@ export default function ModalDrupal(props) {
                         React.createElement("h1", null, "Uploader un m\u00E9dia"),
                         React.createElement("div", { className: "mod_upload_block" },
                             React.createElement("div", { className: "mod_upload_left" },
-                                React.createElement(Upload, { files: files, setFiles: setFiles })),
-                            React.createElement("div", { className: "mod_upload_right" },
-                                React.createElement("div", { className: "mod_update_input" },
-                                    React.createElement(TextField, { id: "outlined-name", label: "alt", value: props.altText, onChange: (e) => props.setAltText(e.target.value) })))),
+                                React.createElement(Upload, { files: files, setFiles: setFiles }))),
                         React.createElement("div", { className: "mod_btn_send" },
                             React.createElement("button", { className: "btn_send", onClick: (e) => {
                                     postImage(e);

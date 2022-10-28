@@ -1,3 +1,4 @@
+/// <reference types="react" />
 interface IGenericInputProps {
     type: string | number | boolean;
     itemAncetre: string;

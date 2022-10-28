@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, FormEvent } from 'react';
 export interface PropsDrupalForm {
-    emptyArray: [];
+    emptyArray: emptyArrayType[] | any;
     editFormValues: object | any;
     setEditFormValues: React.Dispatch<React.SetStateAction<object | string>>;
     onPatchData: (e: FormEvent<HTMLFormElement>) => void;
@@ -36,4 +36,14 @@ export interface PropsDrupalForm {
     chemin_url: string;
     image_array: [];
     navigation: string;
+    drupal_base_url: string;
+    user: string;
+    user_password: string;
 }
+declare type emptyArrayType = {
+    ancetre: string;
+    parent: string;
+    key: string;
+    content: string;
+};
+export {};

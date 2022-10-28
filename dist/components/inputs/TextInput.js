@@ -7,5 +7,5 @@ export default function TextInput(props) {
             // input props
             label: props.TextInputlabel, defaultValue: props.defaultValueTextInput, onChange: props.onChange, 
             // for style of input
-            rows: props.rows, multiline: true, disabled: props.TextInputlabel === 'id' ? true : false })));
+            rows: props.rows, multiline: true, disabled: props.disabled, error: props.error === null ? true : false })));
 }

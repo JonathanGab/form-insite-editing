@@ -1,3 +1,4 @@
+/// <reference types="react" />
 interface propsButton {
     onClick: () => void;
     color: string;

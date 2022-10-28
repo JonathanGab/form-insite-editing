@@ -1,6 +1,6 @@
 {
-  "name": "jonathan-formulaire",
-  "version": "1.0.70",
+  "name": "jonathan-pack-form",
+  "version": "1.0.22",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.11.7",
     "@types/react": "^18.0.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

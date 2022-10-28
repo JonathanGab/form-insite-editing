@@ -1,3 +1,4 @@
+/// <reference types="react" />
 import './Image.css';
 export interface IImageProps {
     src: string;

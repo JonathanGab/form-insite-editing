@@ -19,7 +19,8 @@ interface IModalProps {
   //. ex: http://localhost/drupal/jsonapi/node/ + 'article/' + field_image
   api_url: string;
   //. function for open modal and update file
-  onClick: (e: any) => void;
+  onClick: (e: MouseEvent) => void;
+  onClickModal: (e: MouseEvent) => void;
   //. for update url on click image
   chemin_url: string;
   //. function for update the state
@@ -27,11 +28,8 @@ interface IModalProps {
   //. state for get id the file already upload
   mediaId: number | string;
   //. function for update the state
-  setMediaId: Dispatch<SetStateAction<number | string>>;
-  //. state for add alt text on upload
-  altText: string;
-  //. function for update the state
-  setAltText: Dispatch<SetStateAction<string>>;
+  setMediaId: Dispatch<SetStateAction<number | any>>;
+
   setGetImage: Dispatch<SetStateAction<object>>;
 }
 interface IMap {
@@ -64,7 +62,7 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
             Accept: 'application/vnd.api+json',
             'Content-Type': 'application/octet-stream',
             'Content-Disposition': 'file; filename="test.png"',
-            Authorization: 'Basic ' + window.btoa(`apiuser:Vavaskale69!`),
+            Authorization: 'Basic ' + window.btoa(`dx_admin:Vavaskale69!`),
           },
         }
       );
@@ -78,7 +76,7 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
       <div className="modal">
         <div className="mod_padding">
           <div className="close_btn">
-            <div className="mod_close_btn" onClick={props.onClick}>
+            <div className="mod_close_btn" onClick={props.onClickModal}>
               x
             </div>
           </div>
@@ -125,16 +123,6 @@ export default function ModalDrupal(props: IModalProps): JSX.Element {
               <div className="mod_upload_block">
                 <div className="mod_upload_left">
                   <Upload files={files} setFiles={setFiles} />
-                </div>
-                <div className="mod_upload_right">
-                  <div className="mod_update_input">
-                    <TextField
-                      id="outlined-name"
-                      label="alt"
-                      value={props.altText}
-                      onChange={(e) => props.setAltText(e.target.value)}
-                    />
-                  </div>
                 </div>
               </div>
               <div className="mod_btn_send">

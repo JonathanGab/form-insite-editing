@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, FormEvent } from 'react';
 export interface PropsDrupalForm {
   // tableau vide qui va contenir les données du formulaire
-  emptyArray: [];
+  emptyArray: emptyArrayType[] | any;
   // objet qui va contenir les données du formulaire modifié
   editFormValues: object | any;
   // fonction qui va modifier l'objet tabInput
@@ -58,4 +58,14 @@ export interface PropsDrupalForm {
   chemin_url: string;
   image_array: [];
   navigation: string;
+  drupal_base_url: string;
+  user: string;
+  user_password: string;
 }
+
+type emptyArrayType = {
+  ancetre: string;
+  parent: string;
+  key: string;
+  content: string;
+};
