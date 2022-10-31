@@ -23,27 +23,24 @@ export interface PropsDrupalForm {
     drupal_number_input: string[];
     drupal_module_media_url: string;
     drupal_module_api_url: string;
-    editFormMedia: object | any;
-    setEditFormMedia: Dispatch<React.SetStateAction<{}>>;
-    chemin: string;
-    setChemin: Dispatch<React.SetStateAction<string>>;
     media_url: string;
     api_url: string;
-    setAlt: Dispatch<React.SetStateAction<string>>;
-    setTitle: Dispatch<React.SetStateAction<string>>;
-    title: string;
-    alt: string;
     chemin_url: string;
     image_array: [];
     navigation: string;
     drupal_base_url: string;
-    user: string;
-    user_password: string;
+    previewMedia: previewMediaType[];
+    setPreviewMedia: Dispatch<React.SetStateAction<previewMediaType[]>>;
 }
 declare type emptyArrayType = {
     ancetre: string;
     parent: string;
     key: string;
     content: string;
+};
+declare type previewMediaType = {
+    chemin: string;
+    id: string;
+    url: string;
 };
 export {};

@@ -18,11 +18,22 @@ type userDataType = {
   auth_id: null | string;
 };
 
+type getImageType = {
+  id: string;
+  attributes: {
+    uri: { url: string };
+  };
+};
 export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [storeId, setStoreId] = useState('');
   const [getRoute, setGetRoute] = useState<null | string>(null);
-  const [getImage, setGetImage] = useState<object>({});
+  const [getImage, setGetImage] = useState<getImageType | any>({
+    id: '',
+    attributes: {
+      uri: { url: '' },
+    },
+  });
   const [storageArray, setStorageArray] = useState([]);
   const [chemin, setChemin] = useState<string>('');
   const [dragAndDropUploadId, setDragAndDropUploadId] = useState<
@@ -85,16 +96,16 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   //? --------------------------------------------------------------------------------
 
   const handleInputsChange = (e: ChangeEvent<HTMLInputElement>, item: any) => {
-    setEditFormValues(
+    props.setEditFormValues(
       item?.parent === 'attributes'
         ? {
-            ...editFormValues,
-            ...editFormValues[item?.ancetre],
+            ...props.editFormValues,
+            ...props.editFormValues[item?.ancetre],
             [item?.key]: e.target.value,
           }
         : {
-            ...editFormValues,
-            ...editFormValues[item?.ancetre],
+            ...props.editFormValues,
+            ...props.editFormValues[item?.ancetre],
             [item?.parent]: e.target.value,
           }
     );
@@ -105,6 +116,14 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
   //? --------------------------------------------------------------------------------
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    props.setPreviewMedia([
+      ...props.previewMedia,
+      {
+        chemin: chemin,
+        id: getImage.id,
+        url: getImage.attributes?.uri?.url,
+      },
+    ]);
     setEditFormMedia({
       ...editFormMedia,
       [chemin]: {
@@ -168,6 +187,7 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
       return "Veuillez verifier la configuration de la langue dans votre back office Drupal. La langue à été activée sur le site mais pas sur l'article";
     }
   };
+  //? --------------------------------------------------------------------------------
   const activeInput = (content: string) => {
     if (content === props.navigation) {
       return false;
@@ -216,7 +236,6 @@ export function DrupalForm(props: PropsDrupalForm): JSX.Element {
     }
   };
   // --------------------------------------------------------------------------------
-  console.log('userData', userData);
 
   // --------------------------------------------------------------------------------
   return props.emptyArray ? (

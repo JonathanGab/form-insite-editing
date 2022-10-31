@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './loginForm.css';
 import axios from 'axios';
-import { encryptCodes } from '../../features/encrypt';
+import { encryptCodes, decryptCodes } from '../../features/encrypt';
 import { storeData } from '../../features/storage';
 //! ------------------------------------------ NEW ------------------------------------------
-interface ILoginProps {
-  email: string;
-  password: string;
-  authId: string;
-  setAuthId: React.Dispatch<React.SetStateAction<string>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
-}
-export function LoginForm(props: ILoginProps): JSX.Element {
-  // DONE : encrypt / decrypt
-  // TODO : dixea.com
-  // TODO : multi language !== wpml ou polylang
 
+export function LoginForm(): JSX.Element {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [authId, setAuthId] = useState<string>('');
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -33,29 +25,28 @@ export function LoginForm(props: ILoginProps): JSX.Element {
         },
         {
           headers: {
-            Authorization:
-              'Basic ' + window.btoa(`${props.email}:${props.password}`),
+            Authorization: 'Basic ' + window.btoa(`${email}:${password}`),
             Accept: 'application/vnd.api+json',
             'Content-Type': 'application/vnd.api+json',
           },
         }
       );
-      props.setPassword(encryptCodes(props.password, 'secret'));
-      props.setAuthId(res.data?.data?.id);
+      setPassword(encryptCodes(password, 'secret'));
+      setAuthId(res.data?.data?.id);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    if (props.email !== null || props.email !== null) {
+    if (email !== null || email !== null) {
       storeData({
-        email: props.email,
-        password: props.password,
-        auth_id: props.authId,
+        email: email,
+        password: password,
+        auth_id: authId,
       });
     }
-  }, [props.authId]);
+  }, [authId]);
 
   return (
     <div>
@@ -70,7 +61,7 @@ export function LoginForm(props: ILoginProps): JSX.Element {
               <input
                 type="text"
                 className="form_email_input"
-                onChange={(e) => props.setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="form_input_margin">
@@ -78,7 +69,7 @@ export function LoginForm(props: ILoginProps): JSX.Element {
               <input
                 type="password"
                 className="form_password_input"
-                onChange={(e) => props.setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div className="form_btn_container">
@@ -87,12 +78,7 @@ export function LoginForm(props: ILoginProps): JSX.Element {
           </div>
         </div>
       </form>
-      <div>
-        {/* <button type="button" onClick={deleteDataFromLocalStorage}>
-          {' '}
-          log out
-        </button> */}
-      </div>
+      <div></div>
     </div>
   );
 }

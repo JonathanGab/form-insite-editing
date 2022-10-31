@@ -15,7 +15,12 @@ export function DrupalForm(props) {
     const [isOpen, setIsOpen] = useState(false);
     const [storeId, setStoreId] = useState('');
     const [getRoute, setGetRoute] = useState(null);
-    const [getImage, setGetImage] = useState({});
+    const [getImage, setGetImage] = useState({
+        id: '',
+        attributes: {
+            uri: { url: '' },
+        },
+    });
     const [storageArray, setStorageArray] = useState([]);
     const [chemin, setChemin] = useState('');
     const [dragAndDropUploadId, setDragAndDropUploadId] = useState('');
@@ -53,13 +58,22 @@ export function DrupalForm(props) {
     //? ------------------------------ EDIT DATA FOR TEXT ------------------------------
     //? --------------------------------------------------------------------------------
     const handleInputsChange = (e, item) => {
-        setEditFormValues((item === null || item === void 0 ? void 0 : item.parent) === 'attributes'
-            ? Object.assign(Object.assign(Object.assign({}, editFormValues), editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.key]: e.target.value }) : Object.assign(Object.assign(Object.assign({}, editFormValues), editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.parent]: e.target.value }));
+        props.setEditFormValues((item === null || item === void 0 ? void 0 : item.parent) === 'attributes'
+            ? Object.assign(Object.assign(Object.assign({}, props.editFormValues), props.editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.key]: e.target.value }) : Object.assign(Object.assign(Object.assign({}, props.editFormValues), props.editFormValues[item === null || item === void 0 ? void 0 : item.ancetre]), { [item === null || item === void 0 ? void 0 : item.parent]: e.target.value }));
     };
     //? --------------------------------------------------------------------------------
     //? ------------------------------- CHANGE DATA FOR IMAGE --------------------------
     //? --------------------------------------------------------------------------------
     const handleImageChange = (e) => {
+        var _a, _b;
+        props.setPreviewMedia([
+            ...props.previewMedia,
+            {
+                chemin: chemin,
+                id: getImage.id,
+                url: (_b = (_a = getImage.attributes) === null || _a === void 0 ? void 0 : _a.uri) === null || _b === void 0 ? void 0 : _b.url,
+            },
+        ]);
         setEditFormMedia(Object.assign(Object.assign({}, editFormMedia), { [chemin]: {
                 data: {
                     type: 'file--file',
@@ -106,6 +120,7 @@ export function DrupalForm(props) {
             return "Veuillez verifier la configuration de la langue dans votre back office Drupal. La langue à été activée sur le site mais pas sur l'article";
         }
     };
+    //? --------------------------------------------------------------------------------
     const activeInput = (content) => {
         if (content === props.navigation) {
             return false;
@@ -151,7 +166,6 @@ export function DrupalForm(props) {
         }
     };
     // --------------------------------------------------------------------------------
-    console.log('userData', userData);
     // --------------------------------------------------------------------------------
     return props.emptyArray ? (React.createElement("form", { onSubmit: handleSubmit, className: "form-cms" },
         React.createElement("div", { className: "error_message" }, ((_a = props.emptyArray[5]) === null || _a === void 0 ? void 0 : _a.key) === 'langcode' &&

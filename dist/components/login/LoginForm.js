@@ -7,15 +7,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './loginForm.css';
 import axios from 'axios';
 import { encryptCodes } from '../../features/encrypt';
 import { storeData } from '../../features/storage';
-export function LoginForm(props) {
-    // DONE : encrypt / decrypt
-    // TODO : dixea.com
-    // TODO : multi language !== wpml ou polylang
+//! ------------------------------------------ NEW ------------------------------------------
+export function LoginForm() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [authId, setAuthId] = useState('');
     const handleLogin = (e) => __awaiter(this, void 0, void 0, function* () {
         var _a, _b;
         e.preventDefault();
@@ -30,27 +31,27 @@ export function LoginForm(props) {
                 },
             }, {
                 headers: {
-                    Authorization: 'Basic ' + window.btoa(`${props.email}:${props.password}`),
+                    Authorization: 'Basic ' + window.btoa(`${email}:${password}`),
                     Accept: 'application/vnd.api+json',
                     'Content-Type': 'application/vnd.api+json',
                 },
             });
-            props.setPassword(encryptCodes(props.password, 'secret'));
-            props.setAuthId((_b = (_a = res.data) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.id);
+            setPassword(encryptCodes(password, 'secret'));
+            setAuthId((_b = (_a = res.data) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.id);
         }
         catch (error) {
-            console.log(error);
+            console.error(error);
         }
     });
     useEffect(() => {
-        if (props.email !== null || props.email !== null) {
+        if (email !== null || email !== null) {
             storeData({
-                email: props.email,
-                password: props.password,
-                auth_id: props.authId,
+                email: email,
+                password: password,
+                auth_id: authId,
             });
         }
-    }, [props.authId]);
+    }, [authId]);
     return (React.createElement("div", null,
         React.createElement("form", { className: "form_box", onSubmit: handleLogin },
             React.createElement("div", { className: "form_login" },
@@ -59,10 +60,10 @@ export function LoginForm(props) {
                 React.createElement("div", { className: "form_body" },
                     React.createElement("div", { className: "form_input_margin" },
                         React.createElement("label", { className: "" }, "Email"),
-                        React.createElement("input", { type: "text", className: "form_email_input", onChange: (e) => props.setEmail(e.target.value) })),
+                        React.createElement("input", { type: "text", className: "form_email_input", onChange: (e) => setEmail(e.target.value) })),
                     React.createElement("div", { className: "form_input_margin" },
                         React.createElement("label", { className: "" }, "Password"),
-                        React.createElement("input", { type: "password", className: "form_password_input", onChange: (e) => props.setPassword(e.target.value) })),
+                        React.createElement("input", { type: "password", className: "form_password_input", onChange: (e) => setPassword(e.target.value) })),
                     React.createElement("div", { className: "form_btn_container" },
                         React.createElement("button", { className: "form_btn" }, "Connexion"))))),
         React.createElement("div", null)));
